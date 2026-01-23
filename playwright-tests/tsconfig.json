@@ -1,0 +1,77 @@
+{
+    "compilerOptions": {
+        // "module" specifies the module code generation method: commonjs, amd, system, umd, es6, es2015, es2020, esnext.
+        "module": "ESNext",
+        // "target" sets the JavaScript language version for emitted JavaScript and include compatible library declarations.
+        "target": "ESNext",
+        // "moduleResolution" specifies module resolution strategy: 'bundler' for ESM with TypeScript 5.0+
+        "moduleResolution": "bundler",
+        // "allowSyntheticDefaultImports" allows default imports from modules with no default export. This does not affect code emit, just type checking.
+        "allowSyntheticDefaultImports": true,
+        // "sourceMap" controls the generation of corresponding '.map' file.
+        "sourceMap": false,
+        // "allowUnusedLabels" is used to report errors on unused labels.
+        "allowUnusedLabels": false,
+        // "noFallthroughCasesInSwitch" reports errors for fallthrough cases in switch statements.
+        "noFallthroughCasesInSwitch": true,
+        // "noUnusedLocals" reports errors on unused locals.
+        "noUnusedLocals": true,
+        // "baseUrl" is used to specify the base directory to resolve non-relative module names.
+        "baseUrl": ".",
+        // "resolveJsonModule" allows importing .json files.
+        "resolveJsonModule": true,
+        // "explainFiles" logs out files read during the compilation.
+        "explainFiles": false,
+        // add path alias for easily importing test id's from outside of ui-tests package
+        "paths": {
+            "@ui/*": [
+                "specs/ui/*"
+            ],
+            "@utils/*": [
+                "specs/utils/*"
+            ],
+            "@config/*": [
+                "specs/config/*"
+            ]
+        },
+        // "pretty" stylizes errors and messages using color and context (experimental).
+        "pretty": true,
+        // "esModuleInterop" allows default imports from modules with no default export. This does not affect code emit, just type checking.
+        "esModuleInterop": true,
+        // "forceConsistentCasingInFileNames" ensures that the casing of the file matches the casing of the name of the file in the code.
+        "forceConsistentCasingInFileNames": true,
+        // "skipLibCheck" skips type checking of all declaration files (*.d.ts).
+        "skipLibCheck": true,
+        // "noEmit" does not emit output files.
+        "noEmit": true,
+        // "allowImportingTsExtensions" allows importing .ts files with .js extensions for ESM
+        "allowImportingTsExtensions": true,
+        // "types" includes type definitions for Node and Playwright
+        "types": [
+            "node",
+            "@playwright/test"
+        ],
+        // "experimentalDecorators" enables experimental support for decorators
+        "experimentalDecorators": true,
+        // "lib" specifies library files to be included in the compilation
+        "lib": [
+            "ES2022",
+            "DOM"
+        ]
+    },
+    "ts-node": {
+        "esm": true
+    },
+    "include": [
+        "specs/**/*.ts",
+        "playwright.config.ts",
+        "eslint.config.js",
+        "eslint.base.config.js"
+    ],
+    // "exclude" is used to exclude certain files from the compilation process.
+    "exclude": [
+        "node_modules",
+        "playwright-report",
+        ".state"
+    ]
+}
