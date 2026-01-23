@@ -68,6 +68,12 @@ git clone https://github.com/MihailTest/training-app.git
 cd training-app
 ```
 
+Optional (open in VS Code Web from GitHub):
+```
+On the GitHub repo page, press the "." key.
+Press . = VS Code Web in browser
+```
+
 Install and run locally:
 ```bash
 npm install
