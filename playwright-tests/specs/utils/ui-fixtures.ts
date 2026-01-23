@@ -1,11 +1,6 @@
 import type { Page, TestInfo } from '@playwright/test';
 import { test as baseTest } from '@playwright/test';
 import LoginPage from '@ui/page-objects/login-page.ts';
-import type { UICredentials } from '@ui/test-data/ui-credentials';
-import { QA_USER, ADMIN_USER, getTestUserCredentials } from '@ui/test-data/ui-credentials';
-import type { UserRole } from '@utils/types';
-import { QA_STORAGE_STATE_PATH, ADMIN_STORAGE_STATE_PATH } from '@utils/constants';
-import * as fs from 'fs';
 
 /**
  * Extended fixtures interface for UI testing
