@@ -101,6 +101,18 @@ pnpm run SetupUI
 pnpm run admin-user-tests
 ```
 
+### B1) Run admin smoke tests
+
+```bash
+pnpm run smoke
+```
+
+### B2) Run admin regression tests
+
+```bash
+pnpm run regression
+```
+
 ### C) Run QA user UI tests (optional)
 
 The QA project is **currently commented out** in `playwright-tests/playwright.config.ts`.

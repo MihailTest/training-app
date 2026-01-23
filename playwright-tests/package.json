@@ -7,7 +7,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "SetupUI": "pnpm playwright test --grep @SetupUI",
     "qa-user-tests": "pnpm exec playwright test --project=training-dev-qa-chromium",
-    "admin-user-tests": "pnpm exec playwright test --project=training-dev-admin-chromium"
+    "admin-user-tests": "pnpm exec playwright test --project=training-dev-admin-chromium",
+    "smoke": "pnpm exec playwright test --grep @smoke --project=training-dev-admin-chromium",
+    "regression": "pnpm exec playwright test --grep @regression --project=training-dev-admin-chromium"
   },
   "keywords": [],
   "author": "",
