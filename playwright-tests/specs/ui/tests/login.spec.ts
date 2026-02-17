@@ -10,6 +10,7 @@ test.describe('Login', () => {
 
         await loginPage.navigateTo();
         await loginPage.loginWithCredentials(ADMIN_USER);
+        
 
         expect(await loginPage.shouldHavePath('/'))
         expect(await loginPage.waitForPostLogin())

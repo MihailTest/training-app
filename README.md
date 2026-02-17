@@ -1,5 +1,6 @@
 # Training App
 
+
 A small, intentionally designed training and demo application used to practice and demonstrate modern frontend integration and end-to-end test automation patterns.
 
 This repository is intended for technical recruiters, hiring managers, and engineers who want to quickly understand:
