@@ -16,27 +16,29 @@ export default class HomePage extends BasePage {
 
   constructor(page: Page, testInfo: TestInfo) {
     super(page, testInfo);
-    this.mainContent = page.getByTestId('main-content-container');
+    this.mainContent = page.getByRole('main');
     this.homeContainer = page.getByTestId('page-home-container');
     this.heroSection = page.getByTestId('section-hero');
-    this.welcomeText = page.getByTestId('text-welcome');
-    this.heroDescription = page.getByTestId('text-hero-description');
+    this.welcomeText = page.getByText('Welcome to rotaru.qa-ui-practice-hub');
+    this.heroDescription = page.getByText('UI playground to exercise complex interaction scenarios and edge cases');
     this.formControlCards = {
-      textInput: page.getByTestId('link-text-input'),
-      nestedCheckboxes: page.getByTestId('link-nested-checkboxes'),
-      radioSelection: page.getByTestId('link-radio-selection'),
-      dataTable: page.getByTestId('link-data-table'),
-      buttonInteractions: page.getByTestId('link-button-interactions'),
-      linkNavigation: page.getByTestId('link-link-navigation'),
-      mediaValidation: page.getByTestId('link-media-validation'),
-      fileOperations: page.getByTestId('link-file-operations'),
-      dynamicElements: page.getByTestId('link-dynamic-elements'),
+      'link-text-input': page.getByRole('link', { name: /text input/i }),
+      'link-nested-checkboxes': page.getByRole('link', { name: /nested checkboxes/i }),
+      'link-radio-selection': page.getByRole('link', { name: /radio selection/i }),
+      'link-data-table': page.getByRole('link', { name: /data table/i }),
+      'link-button-interactions': page.getByRole('link', { name: /button interactions/i }),
+      'link-link-navigation': page.getByRole('link', { name: /link navigation/i }),
+      'link-media-validation': page.getByRole('link', { name: /media validation/i }),
+      'link-file-operations': page.getByRole('link', { name: /file operations/i }),
+      'link-dynamic-elements': page.getByRole('link', { name: /dynamic elements/i }),
+      'link-window-management': page.getByRole('link', { name: /window management/i }),
+      'link-draggable-elements': page.getByRole('link', { name: /draggable elements/i }),
     };
-    this.studentRegistrationCard = page.getByTestId('link-student-registration');
+    this.studentRegistrationCard = page.getByRole('link', { name: /student registration/i });
     this.categoryHeaders = {
-      browser: page.locator('#browser-interactions h2'),
-      interactive: page.locator('#interactive-components h2'),
-      dragDrop: page.locator('#drag-drop h2'),
+      browser: page.getByRole('heading', { level: 2, name: /browser interactions/i }),
+      interactive: page.getByRole('heading', { level: 2, name: /interactive components/i }),
+      dragDrop: page.getByRole('heading', { level: 2, name: /drag & drop/i }),
     };
     this.recoveryLink = page.getByRole('link', { name: /home/i }).first();
   }
@@ -96,7 +98,7 @@ export default class HomePage extends BasePage {
    */
   @step('click selected card and wait for expected route')
   async clickCard(dataTestId: string, expectedPath: string): Promise<void> {
-    const card = this.page.getByTestId(dataTestId);
+    const card = this.formControlCards[dataTestId] ?? this.page.getByTestId(dataTestId);
     await expect(card, `${dataTestId} should be visible`).toBeVisible();
     await Promise.all([this.page.waitForURL(new RegExp(`${expectedPath}$`)), this.helpers.clickOnLocator(card)]);
   }
@@ -151,7 +153,7 @@ export default class HomePage extends BasePage {
    */
   @step('scroll selected card into view')
   async scrollCardIntoView(dataTestId: string): Promise<void> {
-    const card = this.page.getByTestId(dataTestId);
+    const card = this.formControlCards[dataTestId] ?? this.page.getByTestId(dataTestId);
     await expect(card, `${dataTestId} should be visible before scrolling`).toBeVisible();
     await card.scrollIntoViewIfNeeded();
   }

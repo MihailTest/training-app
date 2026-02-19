@@ -10,20 +10,24 @@ import { createStorageStateFileIfNotExist } from '@utils/utility-functions';
  * Handles user authentication and login page interactions
  */
 export default class LoginPage extends BasePage {
+  private readonly loginForm: Locator;
   private readonly username: Locator;
   private readonly password: Locator;
   private readonly rememberMe: Locator;
   private readonly loginBtn: Locator;
+  private readonly loginHeading: Locator;
   private readonly logoutBtn: Locator;
   private readonly sideMenu: Locator;
   private readonly invalidCredentialsMessage: Locator;
 
   constructor(page: Page, testInfo: TestInfo) {
     super(page, testInfo);
-    this.username = page.getByTestId('input-username');
-    this.password = page.getByTestId('input-password');
-    this.rememberMe = page.getByRole('checkbox', { name: /remember/i });
+    this.loginForm = page.getByTestId('form-login');
+    this.username = page.getByLabel(/username/i);
+    this.password = page.getByLabel(/password/i);
+    this.rememberMe = page.getByLabel(/remember me/i);
     this.loginBtn = page.getByRole('button', { name: /login/i });
+    this.loginHeading = page.getByRole('heading', { level: 1, name: /welcome back/i });
     this.logoutBtn = page.getByTestId('button-logout-header');
     this.sideMenu = page.getByTestId('menu-side-container');
     this.invalidCredentialsMessage = page.getByText('Invalid credentials');
@@ -35,7 +39,7 @@ export default class LoginPage extends BasePage {
   @step('navigate to login page')
   async navigateTo(): Promise<void> {
     await super.navigateTo('auth/login');
-    await expect(this.username, 'Email input should be visible').toBeVisible();
+    await expect(this.username, 'Username input should be visible').toBeVisible();
   }
 
   /**
@@ -43,7 +47,9 @@ export default class LoginPage extends BasePage {
    */
   @step('verify login page loaded')
   async toBeLoaded(): Promise<void> {
-    await expect(this.username, 'Email input should be visible').toBeVisible();
+    await expect(this.loginHeading, 'Login page heading should be visible').toBeVisible();
+    await expect(this.loginForm, 'Login form should be visible').toBeVisible();
+    await expect(this.username, 'Username input should be visible').toBeVisible();
     await expect(this.password, 'Password input should be visible').toBeVisible();
     await expect(this.loginBtn, 'Login button should be visible').toBeVisible();
   }
