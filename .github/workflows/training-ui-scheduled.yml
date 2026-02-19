@@ -201,29 +201,33 @@ jobs:
         with:
           pattern: shard-*-artifacts
           merge-multiple: true
-          path: downloaded
-          if-no-files-found: ignore
+          path: playwright-tests/downloaded
 
       - name: Merge blob reports
+        id: merge_blob
         shell: bash
         working-directory: playwright-tests
         run: |
           mkdir -p artifacts/merged/blob-input
           if [ ! -d downloaded ]; then
             echo "No shard artifacts directory found. Skipping merge-reports."
+            echo "merged=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           find downloaded -type f -path "*/blob/*.zip" -exec cp {} artifacts/merged/blob-input/ \;
           blob_count=$(find artifacts/merged/blob-input -type f -name "*.zip" | wc -l)
           if [ "$blob_count" -eq 0 ]; then
             echo "No blob report files found. Skipping merge-reports."
+            echo "merged=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           pnpm exec playwright merge-reports --config=specs/utils/merge-reporter.config.ts artifacts/merged/blob-input
+          echo "merged=true" >> "$GITHUB_OUTPUT"
 
       - name: Upload merged reports
+        if: steps.merge_blob.outputs.merged == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: merged-reports
           path: playwright-tests/artifacts/merged/
-          if-no-files-found: warn
+          if-no-files-found: error
