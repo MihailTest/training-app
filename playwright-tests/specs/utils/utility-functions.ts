@@ -7,7 +7,7 @@ import * as fs from 'fs';
  * @returns Random number between min and max
  */
 export const getRandomNumber = (max: number, min: number = 0): number => {
-    return Math.floor(Math.random() * (max - min) + min);
+  return Math.floor(Math.random() * (max - min) + min);
 };
 
 /**
@@ -15,13 +15,13 @@ export const getRandomNumber = (max: number, min: number = 0): number => {
  * @param fileName - Name/path of the storage state file
  */
 export async function createStorageStateFileIfNotExist(fileName: string): Promise<void> {
-    if (!fs.existsSync(fileName)) {
-        const dir = fileName.substring(0, fileName.lastIndexOf('/'));
-        if (dir && !fs.existsSync(dir)) {
-            fs.mkdirSync(dir, { recursive: true });
-        }
-        fs.writeFileSync(fileName, JSON.stringify({ cookies: [], origins: [] }));
+  if (!fs.existsSync(fileName)) {
+    const dir = fileName.substring(0, fileName.lastIndexOf('/'));
+    if (dir && !fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
     }
+    fs.writeFileSync(fileName, JSON.stringify({ cookies: [], origins: [] }));
+  }
 }
 
 /**
@@ -30,7 +30,7 @@ export async function createStorageStateFileIfNotExist(fileName: string): Promis
  * @returns Escaped string safe for use in regex
  */
 export function escapeRegExp(s: string): string {
-    return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 /**
@@ -40,13 +40,13 @@ export function escapeRegExp(s: string): string {
  * @returns Formatted date string
  */
 export function formatDate(date: Date, formatType: 'ISO' | 'US' | 'SHORT' = 'ISO'): string {
-    switch (formatType) {
-        case 'US':
-            return date.toLocaleDateString('en-US');
-        case 'SHORT':
-            return date.toISOString().split('T')[0];
-        case 'ISO':
-        default:
-            return date.toISOString();
-    }
+  switch (formatType) {
+    case 'US':
+      return date.toLocaleDateString('en-US');
+    case 'SHORT':
+      return date.toISOString().split('T')[0];
+    case 'ISO':
+    default:
+      return date.toISOString();
+  }
 }

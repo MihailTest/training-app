@@ -4,9 +4,9 @@ import 'dotenv/config';
  * Environment enum for different deployment environments
  */
 export enum Environment {
-    DEV = 'dev',
-    QA = 'qa',
-    PROD = 'prod',
+  DEV = 'dev',
+  QA = 'qa',
+  PROD = 'prod',
 }
 
 /**
@@ -15,16 +15,16 @@ export enum Environment {
  * @returns The base URL string
  */
 export const UI_BASE_URL = (env: Environment): string => {
-    switch (env) {
-        case Environment.DEV:
-            return 'http://localhost:3000/';
-        case Environment.QA:
-            return 'https://preprod.localhost:3000';
-        case Environment.PROD:
-            return 'https://app.localhost:3000';
-        default:
-            return 'http://localhost:3000/';
-    }
+  switch (env) {
+    case Environment.DEV:
+      return 'http://localhost:3000/';
+    case Environment.QA:
+      return 'https://preprod.localhost:3000';
+    case Environment.PROD:
+      return 'https://app.localhost:3000';
+    default:
+      return 'http://localhost:3000/';
+  }
 };
 
 /**
@@ -42,6 +42,6 @@ export const ADMIN_STORAGE_STATE_PATH = '.state/admin-state.json';
  * @returns Path to storage state file for this test
  */
 export const getStorageStatePathForTest = (testTitle: string, parallelIndex: number, type: 'UI' | 'API'): string => {
-    const sanitizedTitle = testTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-    return `.state/${type.toLowerCase()}_${sanitizedTitle}_${parallelIndex}.json`;
+  const sanitizedTitle = testTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+  return `.state/${type.toLowerCase()}_${sanitizedTitle}_${parallelIndex}.json`;
 };

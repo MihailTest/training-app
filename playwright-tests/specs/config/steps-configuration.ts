@@ -1,7 +1,7 @@
 import { test } from '@playwright/test';
 
 function formatMessage(message: string, args: unknown[]): string {
-    return message.replace(/\{(\d+)\}/g, (_, index) => String(args[Number(index)]));
+  return message.replace(/\{(\d+)\}/g, (_, index) => String(args[Number(index)]));
 }
 
 /**
@@ -26,15 +26,15 @@ function formatMessage(message: string, args: unknown[]): string {
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function step(message?: string): any {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return function actualDecorator(target: any, context: any): any {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return function actualDecorator(target: any, context: any): any {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return function replacementMethod(this: any, ...args: any[]) {
-            const name = message ? formatMessage(message, args) : `${this.constructor.name}.${context.name as string}`;
+    return function replacementMethod(this: any, ...args: any[]) {
+      const name = message ? formatMessage(message, args) : `${this.constructor.name}.${context.name as string}`;
 
-            return test.step(name, async () => target.call(this, ...args), {
-                box: true,
-            });
-        };
+      return test.step(name, async () => target.call(this, ...args), {
+        box: true,
+      });
     };
+  };
 }

@@ -1,6 +1,7 @@
+import 'dotenv/config';
+
 import { defineConfig, devices } from '@playwright/test';
 import { ADMIN_STORAGE_STATE_PATH } from '@utils/constants.ts';
-import 'dotenv/config';
 
 const isCI = process.env.CI === 'true';
 const shard = process.env.SHARD_LABEL ?? 'local';
@@ -29,11 +30,11 @@ export default defineConfig({
   /* Reporter configuration - different for CI vs local */
   reporter: isCI
     ? [
-      ['blob', { outputDir: `artifacts/${shard}/blob` }],
-      ['json', { outputFile: `artifacts/${shard}/results.json` }],
-      ['junit', { outputFile: `artifacts/${shard}/results.xml` }],
-      ['html', { outputFolder: `artifacts/${shard}/html`, open: 'never' }],
-    ]
+        ['blob', { outputDir: `artifacts/${shard}/blob` }],
+        ['json', { outputFile: `artifacts/${shard}/results.json` }],
+        ['junit', { outputFile: `artifacts/${shard}/results.xml` }],
+        ['html', { outputFolder: `artifacts/${shard}/html`, open: 'never' }],
+      ]
     : [['html', { open: 'never' }]],
 
   /* Folder for test artifacts such as screenshots, videos, traces, etc */
@@ -64,7 +65,6 @@ export default defineConfig({
     /* Record video on failure */
     video: 'retain-on-failure',
   },
-
 
   /**
    * Playwright Test Configuration

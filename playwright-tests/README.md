@@ -17,6 +17,7 @@ Use this README when you want to run UI tests locally.
 ## Quickstart (two terminals)
 
 Terminal 1 (app):
+
 ```bash
 cd training-app
 npm install
@@ -24,11 +25,12 @@ npm run dev
 ```
 
 Terminal 2 (tests):
+
 ```bash
 cd training-app/playwright-tests
 pnpm install
 pnpm exec playwright install
-pnpm run SetupUI
+pnpm run test:setup
 pnpm run admin-user-tests
 ```
 
@@ -49,6 +51,7 @@ pnpm exec playwright install
 ## 3) Configure environment
 
 ### NOTE: This .env is intentionally committed for this demo repo (non-production).
+
 ### Credentials are fake training defaults used by the sample app and tests.
 
 There is already a local `.env` in this folder:
@@ -92,7 +95,7 @@ cd training-app/playwright-tests
 This logs in as admin + QA and saves session files under `.state/`:
 
 ```bash
-pnpm run SetupUI
+pnpm run test:setup
 ```
 
 ### B) Run admin user UI tests
@@ -104,13 +107,13 @@ pnpm run admin-user-tests
 ### B1) Run admin smoke tests
 
 ```bash
-pnpm run smoke
+pnpm run test:smoke
 ```
 
 ### B2) Run admin regression tests
 
 ```bash
-pnpm run regression
+pnpm run test:regression
 ```
 
 ### C) Run QA user UI tests (optional)
@@ -118,8 +121,8 @@ pnpm run regression
 The QA project is **currently commented out** in `playwright-tests/playwright.config.ts`.
 To enable QA tests:
 
-1) Uncomment the QA project block.
-2) Then run:
+1. Uncomment the QA project block.
+2. Then run:
 
 ```bash
 pnpm run qa-user-tests
@@ -128,7 +131,7 @@ pnpm run qa-user-tests
 ### D) Run a single test file
 
 ```bash
-pnpm exec playwright test specs/ui/tests/login.spec.ts --project=training-dev-admin-chromium
+pnpm exec playwright test specs/ui/tests/login.spec.ts --project=chromium
 ```
 
 ---
@@ -136,7 +139,7 @@ pnpm exec playwright test specs/ui/tests/login.spec.ts --project=training-dev-ad
 ## 6) Reports & artifacts
 
 - Test artifacts (screenshots, traces, videos):
-  `playwright-tests/playwright-report/test-results-artifacts/`
+  `playwright-tests/artifacts/<shard>/test-results-artifacts/` (default shard: `local`)
 - HTML report:
 
 ```bash
@@ -151,7 +154,7 @@ pnpm exec playwright show-report
 Make sure the UI is running and `BASE_URL` matches it.
 
 **Login fails / stale sessions**  
-Delete `.state/` and run `pnpm run SetupUI` again.
+Delete `.state/` and run `pnpm run test:setup` again.
 
 **QA tests command fails**  
 The QA project is disabled by default. Uncomment it in `playwright-tests/playwright.config.ts`.

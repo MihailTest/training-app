@@ -14,17 +14,17 @@ import { ADMIN_STORAGE_STATE_PATH, QA_STORAGE_STATE_PATH } from '@utils/constant
  * Tagged with @SetupUI for selective execution
  */
 setup('authenticate as admin user', { tag: ['@SetupUI'] }, async ({ page }, testInfo) => {
-    // TestInfo is passed to page objects to enable future per-test attachments/logging.
-    const loginPage = new LoginPage(page, testInfo);
-    await loginPage.navigateTo();
-    await loginPage.loginWithCredentials(ADMIN_USER);
+  // TestInfo is passed to page objects to enable future per-test attachments/logging.
+  const loginPage = new LoginPage(page, testInfo);
+  await loginPage.navigateTo();
+  await loginPage.loginWithCredentials(ADMIN_USER);
 
-    const isLoggedIn = await loginPage.isLoggedIn();
-    if (!isLoggedIn) {
-        throw new Error('admin user authentication failed');
-    }
+  const isLoggedIn = await loginPage.isLoggedIn();
+  if (!isLoggedIn) {
+    throw new Error('admin user authentication failed');
+  }
 
-    await loginPage.saveStorageState(ADMIN_STORAGE_STATE_PATH);
+  await loginPage.saveStorageState(ADMIN_STORAGE_STATE_PATH);
 });
 
 /**
@@ -32,16 +32,16 @@ setup('authenticate as admin user', { tag: ['@SetupUI'] }, async ({ page }, test
  * Tagged with @SetupUI for selective execution
  */
 setup('authenticate as QA user', { tag: ['@SetupUI'] }, async ({ page }, testInfo) => {
-    // TestInfo is passed to page objects to enable future per-test attachments/logging.
-    const loginPage = new LoginPage(page, testInfo);
+  // TestInfo is passed to page objects to enable future per-test attachments/logging.
+  const loginPage = new LoginPage(page, testInfo);
 
-    await loginPage.navigateTo();
-    await loginPage.loginWithCredentials(QA_USER);
+  await loginPage.navigateTo();
+  await loginPage.loginWithCredentials(QA_USER);
 
-    const isLoggedIn = await loginPage.isLoggedIn();
-    if (!isLoggedIn) {
-        throw new Error('QA user authentication failed');
-    }
+  const isLoggedIn = await loginPage.isLoggedIn();
+  if (!isLoggedIn) {
+    throw new Error('QA user authentication failed');
+  }
 
-    await loginPage.saveStorageState(QA_STORAGE_STATE_PATH);
+  await loginPage.saveStorageState(QA_STORAGE_STATE_PATH);
 });

@@ -6,3 +6,4 @@ build/
 Thumbs.db
 .vscode/
 .idea/
+_tmp_*

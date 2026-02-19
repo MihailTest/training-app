@@ -1,13 +1,14 @@
-import type { UserRole } from '@utils/types.ts';
 import 'dotenv/config';
+
+import type { UserRole } from '@utils/types.ts';
 
 /**
  * UI credentials interface
  */
 export interface UICredentials {
-    readonly username: string;
-    readonly password: string;
-    readonly role?: UserRole;
+  readonly username: string;
+  readonly password: string;
+  readonly role?: UserRole;
 }
 
 /**
@@ -17,13 +18,13 @@ export interface UICredentials {
  * @returns UICredentials object
  */
 export function getUICredentials(role: UserRole = 'admin'): UICredentials {
-    const roleKey = role.toUpperCase();
+  const roleKey = role.toUpperCase();
 
-    return {
-        username: process.env[`${roleKey}_USER`] || process.env.USER || 'test@example.com',
-        password: process.env[`${roleKey}_PASSWORD`] || process.env.PASSWORD || 'Test123!',
-        role,
-    };
+  return {
+    username: process.env[`${roleKey}_USER`] || process.env.USER || 'test@example.com',
+    password: process.env[`${roleKey}_PASSWORD`] || process.env.PASSWORD || 'Test123!',
+    role,
+  };
 }
 
 /**
@@ -42,12 +43,12 @@ export const ADMIN_USER: UICredentials = getUICredentials('admin');
  * @returns UICredentials for the specified role
  */
 export function getTestUserCredentials(role: UserRole): UICredentials {
-    switch (role) {
-        case 'qa':
-            return QA_USER;
-        case 'admin':
-            return ADMIN_USER;
-        default:
-            return ADMIN_USER;
-    }
+  switch (role) {
+    case 'qa':
+      return QA_USER;
+    case 'admin':
+      return ADMIN_USER;
+    default:
+      return ADMIN_USER;
+  }
 }

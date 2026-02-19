@@ -9,8 +9,8 @@
     "prettify": "pnpm tsc && pnpm run lint:check && git status",
     "lint:check": "pnpm eslint ./ --format stylish --fix",
     "typecheck": "tsc --noEmit",
-    "qa-user-tests": "pnpm exec playwright test --project=training-dev-qa-chromium",
-    "admin-user-tests": "pnpm exec playwright test --project=training-dev-admin-chromium",
+    "qa-user-tests": "pnpm exec playwright test --project=\"qa chromium\"",
+    "admin-user-tests": "pnpm exec playwright test --project=chromium",
     "test:smoke": "npx playwright test --grep @smoke",
     "test:regression": "npx playwright test --grep @regression",
     "test:setup": "npx playwright test --grep @SetupUI"
@@ -20,8 +20,18 @@
   "license": "ISC",
   "packageManager": "pnpm@10.14.0",
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.1",
+    "@eslint/js": "^9.39.1",
     "@playwright/test": "^1.57.0",
+    "@typescript-eslint/parser": "^8.46.4",
     "dotenv": "^17.2.3",
+    "eslint": "^9.39.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-playwright": "^2.3.0",
+    "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "prettier": "^3.6.2",
+    "typescript-eslint": "^8.46.4",
     "typescript": "^5.9.3"
   }
 }
