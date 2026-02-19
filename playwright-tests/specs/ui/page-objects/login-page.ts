@@ -2,7 +2,7 @@ import type { Locator, Page, TestInfo } from '@playwright/test';
 import { expect } from '@playwright/test';
 import { BasePage } from '@ui/page-objects/globals/base-page';
 import type { UICredentials } from '@ui/test-data/ui-credentials.ts';
-import { step } from '@config/steps-configuration'
+import { step } from '@config/steps-configuration';
 import { createStorageStateFileIfNotExist } from '@utils/utility-functions';
 
 /**
@@ -15,7 +15,8 @@ export default class LoginPage extends BasePage {
     private readonly rememberMe: Locator;
     private readonly loginBtn: Locator;
     private readonly logoutBtn: Locator;
-    private readonly sideMenu: Locator
+    private readonly sideMenu: Locator;
+    private readonly invalidCredentialsMessage: Locator;
 
     constructor(page: Page, testInfo: TestInfo) {
         super(page, testInfo);
@@ -25,6 +26,7 @@ export default class LoginPage extends BasePage {
         this.loginBtn = page.getByRole('button', { name: /login/i });
         this.logoutBtn = page.getByTestId('button-logout-header');
         this.sideMenu = page.getByTestId('menu-side-container');
+        this.invalidCredentialsMessage = page.getByText('Invalid credentials');
     }
 
     /**
@@ -73,6 +75,25 @@ export default class LoginPage extends BasePage {
     }
 
     /**
+     * Logout from the application
+     */
+    @step('logout from the application')
+    async logout(): Promise<void> {
+        await expect(this.logoutBtn, 'Logout button should be visible before logging out').toBeVisible();
+        await this.helpers.clickOnLocator(this.logoutBtn);
+        await this.page.waitForLoadState('load');
+        await this.toBeLoaded();
+    }
+
+    /**
+     * Assert invalid credentials message is visible
+     */
+    @step('assert invalid credentials message is visible')
+    async expectInvalidCredentialsMessage(): Promise<void> {
+        await expect(this.invalidCredentialsMessage, 'Invalid credentials message should appear').toBeVisible();
+    }
+
+    /**
      * Check if user is logged in
      * @returns True if logoutBtn is visible
      */
@@ -94,8 +115,45 @@ export default class LoginPage extends BasePage {
     /**
      * Wait for post-login actions to complete
      */
+    @step('wait for post-login actions')
     async waitForPostLogin(): Promise<void> {
         await expect(this.logoutBtn, 'Logout button should be visible after login').toBeVisible();
         await expect(this.sideMenu, 'Side-menu should be enabled after login').toBeEnabled();
+    }
+
+    /**
+     * Submit login form without changing current field values.
+     */
+    @step('submit login form')
+    async submitLogin(): Promise<void> {
+        await expect(this.loginBtn, 'Login button should be visible before submit').toBeVisible();
+        await this.helpers.clickOnLocator(this.loginBtn);
+    }
+
+    /**
+     * Assert username input is focused after failed form submission.
+     */
+    @step('assert username input is focused')
+    async expectUsernameInputFocused(): Promise<void> {
+        await expect(this.username, 'Username input should be focused').toBeFocused();
+    }
+
+    /**
+     * Assert browser native required-field validation message for username input.
+     */
+    @step('assert username required-field validation message')
+    async expectUsernameRequiredValidationMessage(): Promise<void> {
+        const validationMessage = await this.username.evaluate((element) => {
+            if (!(element instanceof HTMLInputElement)) {
+                return '';
+            }
+
+            return element.validationMessage;
+        });
+
+        await expect(
+            validationMessage,
+            'Username required field should display native browser validation message'
+        ).toMatch(/please fill out this field\./i);
     }
 }

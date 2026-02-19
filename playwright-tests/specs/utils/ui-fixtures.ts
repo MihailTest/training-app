@@ -1,6 +1,7 @@
 import type { Page, TestInfo } from '@playwright/test';
 import { test as baseTest } from '@playwright/test';
 import LoginPage from '@ui/page-objects/login-page.ts';
+import HomePage from '@ui/page-objects/home-page.ts';
 
 /**
  * Extended fixtures interface for UI testing
@@ -8,9 +9,8 @@ import LoginPage from '@ui/page-objects/login-page.ts';
  */
 interface TrainigFixtures {
     loginPage: LoginPage;
-    // in progress
+    homePage: HomePage;
 }
-
 /**
  * Extended test with page object fixtures
  * Use this instead of the base test to get access to all page objects
@@ -29,7 +29,9 @@ export const test = baseTest.extend<TrainigFixtures>({
     loginPage: async ({ page }: { page: Page }, use, testInfo: TestInfo) => {
         await use(new LoginPage(page, testInfo));
     },
-    // in progress
+    homePage: async ({ page }: { page: Page }, use, testInfo: TestInfo) => {
+        await use(new HomePage(page, testInfo));
+    },
 });
 
 // Export expect from @playwright/test for convenience
