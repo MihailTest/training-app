@@ -161,6 +161,25 @@ The QA project is disabled by default. Uncomment it in `playwright-tests/playwri
 
 ---
 
+## 8) CI / Scheduled workflow
+
+Workflow file:
+- `.github/workflows/training-ui-scheduled.yml`
+
+Current CI flow:
+1. Builds and starts the app in production mode (`npm run build`, `npm run start`).
+2. Waits for app readiness on `BASE_URL`.
+3. Creates auth storage state via setup project (`@SetupUI`).
+4. Runs UI tests in 3 shards on `chromium`.
+5. Optionally merges blob reports on manual trigger (`merge_reports=true`).
+
+Notes:
+- Workflow uses `mcr.microsoft.com/playwright:v1.57.0-jammy` to match `@playwright/test` version.
+- Storage state upload includes hidden files from `.state`.
+- Merge step skips cleanly when blob zip files are not present.
+
+---
+
 ## Helpful file locations
 
 - Test config: `playwright-tests/playwright.config.ts`

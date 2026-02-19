@@ -1,5 +1,24 @@
 # Training App
 
+## Automation README
+
+For full automation setup, conventions, and CI workflow details, start here:
+- `playwright-tests/README.md`
+
+---
+
+## How to Run Locally
+
+```bash
+npm install
+npm run dev
+```
+
+Open:
+- `http://localhost:3000`
+
+---
+
 
 A small, intentionally designed training and demo application used to practice and demonstrate modern frontend integration and end-to-end test automation patterns.
 
