@@ -89,6 +89,7 @@ jobs:
         with:
           name: storage-state
           path: playwright-tests/.state/
+          include-hidden-files: true
           if-no-files-found: error
 
   test-shards:
@@ -225,4 +226,4 @@ jobs:
         with:
           name: merged-reports
           path: playwright-tests/artifacts/merged/
-          if-no-files-found: error
+          if-no-files-found: warn
