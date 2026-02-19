@@ -1,7 +1,5 @@
 # Training App
 
-## Automation README
-
 For full automation setup, conventions, and CI workflow details, start here:
 - `playwright-tests/README.md`
 
