@@ -1,46 +1,46 @@
-import { defineConfig, devices, type PlaywrightTestConfig } from '@playwright/test';
-import { Environment, ADMIN_STORAGE_STATE_PATH, UI_BASE_URL, QA_STORAGE_STATE_PATH } from '@utils/constants.ts';
+import { defineConfig, devices } from '@playwright/test';
+import { ADMIN_STORAGE_STATE_PATH } from '@utils/constants.ts';
 import 'dotenv/config';
+
+const isCI = process.env.CI === 'true';
+const shard = process.env.SHARD_LABEL ?? 'local';
 
 /**
  * Default configuration shared across all projects
  * See https://playwright.dev/docs/test-configuration
  */
-export const defaultConfig: PlaywrightTestConfig = {
+export default defineConfig({
   /* Maximum time one test can run for */
-  timeout: 180_000,
-
+  timeout: isCI ? 120_000 : 60_000,
+  globalTimeout: isCI ? 15 * 60_000 : 10 * 60_000,
   expect: {
     /**
      * Maximum time expect() should wait for the condition to be met
      */
-    timeout: 20_000,
+    timeout: 10_000,
   },
-
-  /* Global timeout for the entire test run */
-  globalTimeout: 270_000,
 
   /* Run tests in files in parallel */
   fullyParallel: true,
 
   /* Retry failing tests in CI environment one time, don't retry in local */
-  retries: process.env.CI ? 1 : 0,
+  retries: isCI ? 1 : 0,
 
   /* Reporter configuration - different for CI vs local */
-  reporter: process.env.CI
+  reporter: isCI
     ? [
-      ['blob'],
-      ['list'],
-      ['junit', { outputFile: 'playwright-report/xml/test-results.xml' }],
-      ['playwright-ctrf-json-reporter', { outputFile: 'json-results.json', outputDir: 'playwright-report/json' }],
+      ['blob', { outputDir: `artifacts/${shard}/blob` }],
+      ['json', { outputFile: `artifacts/${shard}/results.json` }],
+      ['junit', { outputFile: `artifacts/${shard}/results.xml` }],
+      ['html', { outputFolder: `artifacts/${shard}/html`, open: 'never' }],
     ]
-    : [['list']],
+    : [['html', { open: 'never' }]],
 
   /* Folder for test artifacts such as screenshots, videos, traces, etc */
-  outputDir: './playwright-report/test-results-artifacts/',
+  outputDir: `artifacts/${shard}/test-results-artifacts`,
 
   /* Number of parallel workers */
-  workers: 3,
+  workers: isCI ? undefined : 3,
 
   /* Fail the build on CI if you accidentally left test.only in the source code */
   forbidOnly: !!process.env.CI,
@@ -50,13 +50,7 @@ export const defaultConfig: PlaywrightTestConfig = {
 
   use: {
     /* Run in headless mode in CI, headed locally */
-    headless: !!process.env.CI,
-
-    /* Maximum time each action such as `click()` can take */
-    actionTimeout: 20_000,
-
-    /* Navigation timeout */
-    navigationTimeout: 120_000,
+    headless: isCI,
 
     /* Data test id attribute pattern */
     testIdAttribute: 'data-testid',
@@ -70,79 +64,47 @@ export const defaultConfig: PlaywrightTestConfig = {
     /* Record video on failure */
     video: 'retain-on-failure',
   },
-};
 
-/**
- * Playwright Test Configuration
- * Defines test projects for different environments and setups
- */
-export default defineConfig({
-  ...defaultConfig,
+
+  /**
+   * Playwright Test Configuration
+   * Defines test projects for different environments and setups
+   */
   projects: [
     // Setup project for Dev environment
     {
-      name: `training-setup-${Environment.DEV}`,
+      name: 'setup',
       testDir: `./specs/config/`,
       testMatch: /global\.setup.ts/,
       grep: /@SetupUI/,
-      use: {
-        baseURL: UI_BASE_URL(Environment.DEV),
-      },
     },
 
     // UI tests for Dev environment on Chromium
     // admin project
     {
-      name: `training-${Environment.DEV}-admin-chromium`,
+      name: 'chromium',
       testDir: `./specs/ui/tests/`,
       testMatch: /.*\.spec\.ts/,
       use: {
-        baseURL: UI_BASE_URL(Environment.DEV),
         ...devices['Desktop Chrome'],
         ignoreHTTPSErrors: true,
         storageState: ADMIN_STORAGE_STATE_PATH,
       },
-      // dependencies: [`training-setup-${Environment.DEV}`],
+      // dependencies: ['setup'],
     },
 
     // qa project
+    // first import QA_STORAGE_STATE_PATH
     // {
-    //   name: `training-${Environment.DEV}-qa-user-chromium`,
+    //   name: 'qa chromium',
     //   testDir: `./specs/ui/tests/`,
     //   testMatch: /.*\.spec\.ts/,
     //   use: {
-    //     baseURL: UI_BASE_URL(Environment.DEV),
     //     ...devices['Desktop Chrome'],
     //     ignoreHTTPSErrors: true,
     //     storageState: QA_STORAGE_STATE_PATH,
     //   },
-    //   // dependencies: [`training-setup-${Environment.DEV}`],
-    // },
-
-    // // Optional: Setup project for QA environment
-    // {
-    //   name: `training-setup-${Environment.QA}`,
-    //   testDir: `./specs/ui/tests/auth`,
-    //   testMatch: /auth.setup.ts/,
-    //   grep: /@SetupUI/,
-    //   use: {
-    //     baseURL: UI_BASE_URL(Environment.QA),
-    //     storageState: STORAGE_STATE_PATH,
-    //   },
-    // },
-
-    // // Optional: UI tests for QA environment on Chromium
-    // {
-    //   name: `training-${Environment.QA}-chromium`,
-    //   testDir: `./specs/ui/tests/`,
-    //   testMatch: /.*\.spec\.ts/,
-    //   use: {
-    //     baseURL: UI_BASE_URL(Environment.QA),
-    //     ...devices['Desktop Chrome'],
-    //     ignoreHTTPSErrors: true,
-    //     storageState: STORAGE_STATE_PATH,
-    //   },
-    //   dependencies: [`training-setup-${Environment.QA}`],
+    //   // dependencies: ['setup'],
     // },
   ],
 });

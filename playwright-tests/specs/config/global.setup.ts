@@ -13,7 +13,7 @@ import { ADMIN_STORAGE_STATE_PATH, QA_STORAGE_STATE_PATH } from '@utils/constant
  * Authentication setup for admin user (full access)
  * Tagged with @SetupUI for selective execution
  */
-setup('authenticate as admin user', { tag: ['@SetupUI'] }, async ({ page, }, testInfo) => {
+setup('authenticate as admin user', { tag: ['@SetupUI'] }, async ({ page }, testInfo) => {
     // TestInfo is passed to page objects to enable future per-test attachments/logging.
     const loginPage = new LoginPage(page, testInfo);
     await loginPage.navigateTo();

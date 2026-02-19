@@ -4,12 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "SetupUI": "pnpm playwright test --grep @SetupUI",
+    "lint": "pnpm tsc && pnpm eslint ./ --format stylish --fix",
+    "format:check": "prettier . --check",
+    "prettify": "pnpm tsc && pnpm run lint:check && git status",
+    "lint:check": "pnpm eslint ./ --format stylish --fix",
+    "typecheck": "tsc --noEmit",
     "qa-user-tests": "pnpm exec playwright test --project=training-dev-qa-chromium",
     "admin-user-tests": "pnpm exec playwright test --project=training-dev-admin-chromium",
-    "smoke": "pnpm exec playwright test --grep @smoke --project=training-dev-admin-chromium",
-    "regression": "pnpm exec playwright test --grep @regression --project=training-dev-admin-chromium"
+    "test:smoke": "npx playwright test --grep @smoke",
+    "test:regression": "npx playwright test --grep @regression",
+    "test:setup": "npx playwright test --grep @SetupUI"
   },
   "keywords": [],
   "author": "",
