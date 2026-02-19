@@ -27,7 +27,7 @@ env:
 jobs:
   setup-auth:
     runs-on: ubuntu-latest
-    container: mcr.microsoft.com/playwright:v1.58.2-jammy
+    container: mcr.microsoft.com/playwright:v1.57.0-jammy
     env:
       BASE_URL: ${{ github.event.inputs.base_url || 'http://127.0.0.1:3000' }}
     steps:
@@ -94,7 +94,7 @@ jobs:
   test-shards:
     needs: setup-auth
     runs-on: ubuntu-latest
-    container: mcr.microsoft.com/playwright:v1.58.2-jammy
+    container: mcr.microsoft.com/playwright:v1.57.0-jammy
     strategy:
       fail-fast: false
       matrix:
@@ -177,7 +177,7 @@ jobs:
     needs: test-shards
     if: ${{ !cancelled() && github.event_name == 'workflow_dispatch' && github.event.inputs.merge_reports == 'true' }}
     runs-on: ubuntu-latest
-    container: mcr.microsoft.com/playwright:v1.58.2-jammy
+    container: mcr.microsoft.com/playwright:v1.57.0-jammy
     steps:
       - uses: actions/checkout@v4
 
@@ -200,13 +200,18 @@ jobs:
         with:
           pattern: shard-*-artifacts
           merge-multiple: true
-          path: playwright-tests/downloaded
+          path: downloaded
+          if-no-files-found: ignore
 
       - name: Merge blob reports
         shell: bash
         working-directory: playwright-tests
         run: |
           mkdir -p artifacts/merged/blob-input
+          if [ ! -d downloaded ]; then
+            echo "No shard artifacts directory found. Skipping merge-reports."
+            exit 0
+          fi
           find downloaded -type f -path "*/blob/*.zip" -exec cp {} artifacts/merged/blob-input/ \;
           blob_count=$(find artifacts/merged/blob-input -type f -name "*.zip" | wc -l)
           if [ "$blob_count" -eq 0 ]; then
