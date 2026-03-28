@@ -164,9 +164,11 @@ The QA project is disabled by default. Uncomment it in `playwright-tests/playwri
 ## 8) CI / Scheduled workflow
 
 Workflow file:
+
 - `.github/workflows/training-ui-scheduled.yml`
 
 Current CI flow:
+
 1. Builds and starts the app in production mode (`npm run build`, `npm run start`).
 2. Waits for app readiness on `BASE_URL`.
 3. Creates auth storage state via setup project (`@SetupUI`).
@@ -174,7 +176,8 @@ Current CI flow:
 5. Optionally merges blob reports on manual trigger (`merge_reports=true`).
 
 Notes:
-- Workflow uses `mcr.microsoft.com/playwright:v1.57.0-jammy` to match `@playwright/test` version.
+
+- Workflow uses `mcr.microsoft.com/playwright:v1.58.2-jammy` to match `@playwright/test` version.
 - Storage state upload includes hidden files from `.state`.
 - Merge step skips cleanly when blob zip files are not present.
 
@@ -183,7 +186,15 @@ Notes:
 ## Agent guidance (Codex/AI)
 
 - Repo-wide rules live in `playwright-tests/AGENTS.md`.
-- Task-specific guidance lives in `playwright-tests/.agents/skills/*`.
+- Agents live in `playwright-tests/.agents/*.md`.
+- Task-specific skills live in `playwright-tests/.agents/skills/*`.
+- Commands live in `playwright-tests/.agents/commands/*.md`.
+- Codex config lives in `playwright-tests/.codex/config.toml`.
+- Hooks config lives in `playwright-tests/.codex/settings.json`.
+- MCP servers config lives in `playwright-tests/.codex/mcp.json` (or `.vscode/mcp.json` if used locally).
+- Hooks/guardrails are enforced only when using Codex; they are not git hooks.
+
+Normal usage: describe the task directly; explicit agent naming is optional for advanced use.
 
 ---
 
