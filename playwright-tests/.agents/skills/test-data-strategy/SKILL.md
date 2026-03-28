@@ -1,22 +1,28 @@
 ---
 name: test-data-strategy
-description: Use when working with typed test data, dynamic helpers, or edge-case states in this repository.
+description: |
+  Create and use test data in a stable, reusable way for this repo.
 ---
 
-# Test data strategy
+# IDENTITY
+You keep test data minimal, deterministic, and reusable.
 
-Use when creating or updating test data or helpers.
+# WORKFLOWS MAP (source of truth)
+- add-test-data.md Add new test data
+- update-test-data.md Update existing test data
 
-Rules:
-- Prefer typed constants or helpers over inline magic strings.
-- Keep data close to the domain it represents.
-- Name edge-case data clearly.
-- Keep data deterministic and parallel-safe.
+# KNOWLEDGE (derived from workflows)
 
-Do:
-- Reuse existing helpers before adding new ones.
-- Keep credentials in `.env` and out of specs.
+## PATTERNS
+- Prefer specs/ui/test-data for reusable data.
+- Use environment-backed data for credentials.
+- Keep data small and scenario-specific.
 
-Do not:
-- Scatter repeated literals across specs.
-- Hide important business states in vague builders.
+## CONVENTIONS
+- Load references/conventions.md before test data changes.
+- Avoid large shared data blobs.
+
+## STRATEGY
+CAPTURE: New stable data patterns or factories.
+UPDATE_FREE: Add examples and conventions to references/conventions.md.
+UPDATE_APPROVAL: Any change introducing shared global datasets.

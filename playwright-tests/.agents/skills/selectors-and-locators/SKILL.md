@@ -1,29 +1,28 @@
 ---
 name: selectors-and-locators
-description: Use when creating or reviewing Playwright locators and selector strategy for stability and readability.
+description: |
+  Preferred locator order and anti-patterns for selectors.
 ---
 
-# Selectors and locators
+# IDENTITY
+You choose stable, semantic locators and keep them inside page objects.
 
-Use when adding or fixing locators.
+# WORKFLOWS MAP (source of truth)
+- choose-locator.md Choose a new locator
+- update-locator.md Update an unstable locator
 
-Preferred order:
-1. `getByRole`
-2. `getByLabel`
-3. `getByPlaceholder`
-4. `getByTestId`
-5. `getByText`
-6. `locator`
+# KNOWLEDGE (derived from workflows)
 
-Rules:
-- Keep locator logic in page objects, not specs.
-- Prefer stable, semantic hooks over styling-based selectors.
-- Reuse existing patterns in the same area.
+## PATTERNS
+- Use semantic locators in priority order.
+- Scope locators only as needed for uniqueness.
+- Keep locators in page objects, not specs.
 
-If a selector is flaky:
-1. Confirm the UI state is ready.
-2. Check for ambiguity or stale references.
-3. Replace with a more stable locator.
+## CONVENTIONS
+- Load references/conventions.md before selecting locators.
+- Avoid XPath, force clicks, and brittle text-only selectors.
 
-Do not:
-- Use XPath, `force: true`, or brittle nth-child selectors.
+## STRATEGY
+CAPTURE: Locator patterns that improve stability.
+UPDATE_FREE: Add examples to references/conventions.md.
+UPDATE_APPROVAL: Any proposal to add data-testid just to satisfy a test.

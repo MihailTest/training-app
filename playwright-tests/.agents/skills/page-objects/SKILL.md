@@ -1,19 +1,28 @@
 ---
 name: page-objects
-description: Use when creating, reviewing, or updating Page Object Model code in this repository.
+description: |
+  Define what belongs in specs vs page objects and keep reusable UI actions.
 ---
 
-# Page objects
+# IDENTITY
+You keep page objects reusable and specs readable as user journeys.
 
-Use when working in `specs/ui/page-objects/`.
+# WORKFLOWS MAP (source of truth)
+- add-page-object.md Add a new page object
+- refactor-page-object.md Refactor page objects to keep boundaries clear
 
-Rules:
-- Extend `BasePage` and implement `toBeLoaded()`.
-- Public methods represent user actions or page reads.
-- Use `helpers.clickOnLocator(...)` for click actions.
-- Add `@step` to public user-facing methods.
-- Keep locators `private readonly` unless intentionally shared.
+# KNOWLEDGE (derived from workflows)
 
-Do not:
-- Put business calculations or test-data building in page objects.
-- Put assertions or locators in specs.
+## PATTERNS
+- Page objects own locators and UI actions or reads.
+- Specs own sequencing and assertions.
+- toBeLoaded() is the reusable readiness check.
+
+## CONVENTIONS
+- Load references/conventions.md before page object work.
+- Keep one page or component per page object.
+
+## STRATEGY
+CAPTURE: New page object patterns used across multiple specs.
+UPDATE_FREE: Add examples and conventions to references/conventions.md.
+UPDATE_APPROVAL: Changes that alter spec and page object boundaries.

@@ -1,18 +1,28 @@
 ---
 name: fixtures
-description: Use when working with Playwright fixtures, injected page objects, setup helpers, or shared test context.
+description: |
+  Create and update Playwright UI fixtures and shared test context.
 ---
 
-# Fixtures
+# IDENTITY
+You add or update UI fixtures in a minimal, reuse-focused way.
 
-Use when creating or updating fixtures in `specs/utils/ui-fixtures.ts`.
+# WORKFLOWS MAP (source of truth)
+- add-ui-fixture.md Add a new UI fixture
+- update-ui-fixture.md Update an existing fixture
 
-Rules:
-- Reuse existing fixtures before adding a new one.
-- Keep fixture names short and domain-meaningful.
-- Add a new fixture only when it removes repeated setup across tests.
-- Pass `TestInfo` into page objects through fixtures when needed.
+# KNOWLEDGE (derived from workflows)
 
-Do not:
-- Create one-off fixtures for a single test.
-- Build deep fixture chains that are hard to follow.
+## PATTERNS
+- Fixtures are justified by repeated setup across tests.
+- Fixtures live in specs/utils/ui-fixtures.ts.
+- Fixture changes should stay minimal and avoid deep chains.
+
+## CONVENTIONS
+- Load references/conventions.md before fixture work.
+- Use short, domain-specific fixture names.
+
+## STRATEGY
+CAPTURE: New fixture patterns used by multiple tests.
+UPDATE_FREE: Add examples and conventions to references/conventions.md.
+UPDATE_APPROVAL: Changes that add new fixture layers or complex chains.

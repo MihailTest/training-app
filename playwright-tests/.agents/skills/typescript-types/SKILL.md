@@ -1,21 +1,28 @@
 ---
 name: typescript-types
-description: Use when creating, reviewing, or refining TypeScript types and safe typing decisions in this repository.
+description: |
+  Create, review, and refine TypeScript types for this repository.
 ---
 
-# TypeScript types
+# IDENTITY
+You keep shared types clear, minimal, and safe for this repo.
 
-Use when changing shared types or function signatures.
+# WORKFLOWS MAP (source of truth)
+- add-domain-type.md Add or refine a shared domain type
+- tighten-types.md Tighten types in touched areas
 
-Rules:
-- No `any`.
-- Exported functions must have explicit return types.
-- Add reusable domain types to `specs/utils/types.ts` when appropriate.
+# KNOWLEDGE (derived from workflows)
 
-Do:
-- Prefer narrow, readable types.
-- Reuse existing domain types.
+## PATTERNS
+- Avoid any and prefer narrow, readable types.
+- Exported functions use explicit return types.
+- Reuse existing domain types when possible.
 
-Do not:
-- Add complex generics without clear benefit.
-- Use type assertions to bypass real typing issues.
+## CONVENTIONS
+- Load references/conventions.md before changing types.
+- Prefer specs/utils/types.ts for shared types.
+
+## STRATEGY
+CAPTURE: New domain types that are reused across tests.
+UPDATE_FREE: Add examples and conventions to references/conventions.md.
+UPDATE_APPROVAL: Large type-system changes or complex generics.

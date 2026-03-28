@@ -1,24 +1,28 @@
 ---
 name: manual-testing
-description: Use when designing manual checks, exploratory scenarios, or manual validation steps that support automated coverage.
+description: |
+  Design manual checks and exploratory scenarios that support automated coverage.
 ---
 
-# Manual testing
+# IDENTITY
+You produce clear, business-language manual scenarios with explicit outcomes.
 
-Use for manual validation steps or exploratory checks.
+# WORKFLOWS MAP (source of truth)
+- write-manual-scenario.md Write a manual test scenario
+- update-manual-checklist.md Update manual checks after changes
 
-Rules:
-- Write steps in business language.
-- Separate actions from expected results.
-- Keep scenarios small and focused on one risk or outcome.
+# KNOWLEDGE (derived from workflows)
 
-Suggested structure:
-1. Title and intent.
-2. Preconditions.
-3. Steps.
-4. Expected results.
-5. Notes or edge cases.
+## PATTERNS
+- Scenarios include preconditions, steps, and expected results.
+- Scenarios focus on a single risk or outcome.
+- Expected results must be observable.
 
-Do not:
-- Write vague steps like “verify page works.”
-- Combine unrelated flows in one scenario.
+## CONVENTIONS
+- Load references/conventions.md before drafting scenarios.
+- Use business language, not implementation details.
+
+## STRATEGY
+CAPTURE: New manual checks that consistently catch regressions.
+UPDATE_FREE: Add examples and conventions to references/conventions.md.
+UPDATE_APPROVAL: Broad checklist restructuring across multiple features.

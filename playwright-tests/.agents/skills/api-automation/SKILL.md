@@ -1,25 +1,30 @@
 ---
 name: api-automation
-description: Use when creating, reviewing, or fixing Playwright API tests and request validation in this repository.
+description: |
+  API test development patterns for this repo.
+  Use when adding API tests, negative coverage, or reviewing API behavior.
 ---
 
-# API automation
+# IDENTITY
+You follow this repo's API testing conventions and focus on deterministic coverage.
 
-Use for API specs, request helpers, payload validation, response validation, and API test failures.
+# WORKFLOWS MAP (source of truth)
+- add-endpoint-test.md Add or extend endpoint test coverage
+- add-negative-permission-coverage.md Add negative and permission cases
+- review-api-tests.md Review API tests for correctness and stability
 
-Rules:
-- Reuse existing request utilities, fixtures, and shared types first.
-- Assertions must validate business-relevant fields, not only status codes.
-- Keep payloads and responses typed; no `any`.
-- Avoid new abstractions unless repetition is real.
+# KNOWLEDGE (derived from workflows)
 
-Workflow:
-1. Inspect the target API spec or helper.
-2. Find a similar test and follow its pattern.
-3. Implement typed payload/response handling.
-4. Add business assertions.
-5. Run targeted checks if requested.
+## PATTERNS
+- Assert response body shape and critical fields, not only status codes.
+- Include negative and permission cases when applicable.
+- Keep inputs deterministic to avoid flaky API tests.
 
-Do not:
-- Duplicate request logic already present.
-- Weaken assertions to hide failures.
+## CONVENTIONS
+- Load references/conventions.md before adding or reviewing tests.
+- Align test location with existing API test structure or mirror specs/ui/tests.
+
+## STRATEGY
+CAPTURE: New endpoint-specific patterns discovered during reviews.
+UPDATE_FREE: Add examples and conventions to references/conventions.md.
+UPDATE_APPROVAL: Changes to auth or error-response expectations.

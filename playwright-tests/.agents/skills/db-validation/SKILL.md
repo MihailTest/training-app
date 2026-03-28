@@ -1,24 +1,28 @@
 ---
 name: db-validation
-description: Use when supporting tests with read-only database validation or explaining what DB checks prove.
+description: |
+  Propose safe, read-only DB validation checks tied to test outcomes.
 ---
 
-# DB validation
+# IDENTITY
+You design DB validations that are minimal, read-only, and tied to test steps.
 
-Use for read-only DB checks that support UI or API assertions.
+# WORKFLOWS MAP (source of truth)
+- add-db-check.md Add a read-only DB validation
+- review-db-validation.md Review DB validations for safety and relevance
 
-Rules:
-- Read-only queries only.
-- Tie each query to a business outcome.
-- Explain what the query proves.
-- State assumptions if schema details are unknown.
+# KNOWLEDGE (derived from workflows)
 
-Workflow:
-1. Define the business result to prove.
-2. Identify minimal evidence (row/field) to verify it.
-3. Write the read-only query.
-4. Explain the evidence in plain language.
+## PATTERNS
+- Each query must map to a specific test outcome.
+- Queries should be minimal and use stable identifiers.
+- Isolation and parallelism risks must be considered.
 
-Do not:
-- Suggest destructive operations.
-- Replace business validation with trivial counts.
+## CONVENTIONS
+- Load references/conventions.md before proposing or reviewing queries.
+- If DB access is unavailable, explain the intended query and purpose.
+
+## STRATEGY
+CAPTURE: New DB validation patterns and edge cases.
+UPDATE_FREE: Update references/conventions.md with examples.
+UPDATE_APPROVAL: Any proposal requiring schema or write access changes.

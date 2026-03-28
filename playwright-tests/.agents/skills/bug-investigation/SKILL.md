@@ -1,24 +1,28 @@
 ---
 name: bug-investigation
-description: Use when a test fails, is flaky, or behaves inconsistently and root cause analysis is needed before code changes.
+description: |
+  Identify and explain sources of Playwright test flakiness and stabilize tests.
 ---
 
-# Bug investigation
+# IDENTITY
+You diagnose Playwright flakiness and recommend minimal, deterministic fixes.
 
-Use when a Playwright test fails or flakes.
+# WORKFLOWS MAP (source of truth)
+- triage-flaky-test.md Triage and explain flaky failures
+- stabilize-flaky-test.md Apply targeted stabilizations
 
-Rules:
-- Classify the failure before proposing a fix.
-- Trace the failing step to the page object or helper.
-- Check for data drift, missing preconditions, or stale locators.
-- Explain the root cause first, then suggest the smallest safe fix.
+# KNOWLEDGE (derived from workflows)
 
-Workflow:
-1. Read the failure output or trace if available.
-2. Identify the exact failing step and expected state.
-3. Verify inputs, data, and timing assumptions.
-4. Propose a minimal, targeted change.
+## PATTERNS
+- Prefer UI-state waits over timeouts.
+- Root causes cluster around timing, state leakage, or unstable locators.
+- Fixes should be minimal and scoped to the failing flow.
 
-Do not:
-- Weaken assertions to make tests pass.
-- Add stability hacks that mask real issues.
+## CONVENTIONS
+- Load references/conventions.md before triage or stabilization.
+- Avoid using retries as the primary fix.
+
+## STRATEGY
+CAPTURE: New flakiness patterns and reproducible cases.
+UPDATE_FREE: Add new examples and conventions to references/conventions.md.
+UPDATE_APPROVAL: Any change that requires broader test architecture changes.
