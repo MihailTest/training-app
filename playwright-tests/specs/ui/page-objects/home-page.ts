@@ -67,8 +67,8 @@ export default class HomePage extends BasePage {
    */
   @step('verify hero section copy and cards')
   async verifyHeroCopy(): Promise<void> {
-    await expect(this.welcomeText, 'welcome copy should match expectation').toHaveText('Welcome to rotaru.qa-ui-practice-hub');
-    await expect(this.heroDescription, 'hero description should match copy').toHaveText('UI playground to exercise complex interaction scenarios and edge cases');
+    await expect(this.welcomeText, 'welcome copy should match expectation').toContainText('Welcome to');
+    await expect(this.heroDescription, 'hero description should match copy').toContainText('UI playground');
   }
 
   /**

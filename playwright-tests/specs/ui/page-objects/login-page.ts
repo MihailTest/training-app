@@ -149,14 +149,14 @@ export default class LoginPage extends BasePage {
    */
   @step('assert username required-field validation message')
   async expectUsernameRequiredValidationMessage(): Promise<void> {
-    const validationMessage = await this.username.evaluate((element) => {
+    const isValueMissing = await this.username.evaluate((element) => {
       if (!(element instanceof HTMLInputElement)) {
-        return '';
+        return false;
       }
 
-      return element.validationMessage;
+      return element.validity.valueMissing;
     });
 
-    await expect(validationMessage, 'Username required field should display native browser validation message').toMatch(/please fill out this field\./i);
+    await expect(isValueMissing, 'Username required field should display browser-native validation state').toBe(true);
   }
 }

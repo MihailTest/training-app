@@ -53,6 +53,9 @@ export default defineConfig({
     /* Run in headless mode in CI, headed locally */
     headless: isCI,
 
+    /* Base URL for page.goto and navigation helpers */
+    baseURL: process.env.BASE_URL || 'http://localhost:3000',
+
     /* Data test id attribute pattern */
     testIdAttribute: 'data-testid',
 

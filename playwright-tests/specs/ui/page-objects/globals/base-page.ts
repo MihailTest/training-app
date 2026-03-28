@@ -30,9 +30,8 @@ export abstract class BasePage {
    * @param options - Navigation options
    */
   async navigateTo(path?: string, options: { waitUntil?: 'commit' | 'domcontentloaded' | 'load' | 'networkidle' } = { waitUntil: 'commit' }): Promise<void> {
-    const baseUrl = this.page.context().browser()?.browserType().name() ? process.env.BASE_URL || '' : '';
-    const url = path ? `${baseUrl}/${path}` : baseUrl;
-    await this.page.goto(url, options);
+    const normalizedPath = path ? `/${path.replace(/^\//, '')}` : '/';
+    await this.page.goto(normalizedPath, options);
   }
 
   /**
