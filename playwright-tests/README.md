@@ -1,7 +1,6 @@
 # Playwright Tests (Training App)
 
 This folder is a **standalone Playwright test workspace**. It has its own `package.json` and uses **pnpm**.
-This project lives in a GitHub repo so it can be referenced in a CV or portfolio.
 Use this README when you want to run UI tests locally.
 
 ---
