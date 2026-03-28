@@ -30,11 +30,11 @@ export default defineConfig({
   /* Reporter configuration - different for CI vs local */
   reporter: isCI
     ? [
-        ['blob', { outputDir: `artifacts/${shard}/blob` }],
-        ['json', { outputFile: `artifacts/${shard}/results.json` }],
-        ['junit', { outputFile: `artifacts/${shard}/results.xml` }],
-        ['html', { outputFolder: `artifacts/${shard}/html`, open: 'never' }],
-      ]
+      ['blob', { outputDir: `artifacts/${shard}/blob` }],
+      ['json', { outputFile: `artifacts/${shard}/results.json` }],
+      ['junit', { outputFile: `artifacts/${shard}/results.xml` }],
+      ['html', { outputFolder: `artifacts/${shard}/html`, open: 'never' }],
+    ]
     : [['html', { open: 'never' }]],
 
   /* Folder for test artifacts such as screenshots, videos, traces, etc */
@@ -93,7 +93,7 @@ export default defineConfig({
         ignoreHTTPSErrors: true,
         storageState: ADMIN_STORAGE_STATE_PATH,
       },
-      // dependencies: ['setup'],
+      dependencies: ['setup'],
     },
 
     // qa project
