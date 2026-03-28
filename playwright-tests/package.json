@@ -4,34 +4,37 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "lint": "pnpm tsc && pnpm eslint ./ --format stylish --fix",
+    "lint": "pnpm tsc && pnpm run lint:check",
     "format:check": "prettier . --check",
-    "prettify": "pnpm tsc && pnpm run lint:check && git status",
-    "lint:check": "pnpm eslint ./ --format stylish --fix",
+    "prettify": "pnpm tsc && pnpm run lint:fix && pnpm exec prettier . --write && git status",
+    "lint:check": "pnpm eslint . --format stylish",
+    "lint:fix": "pnpm eslint . --format stylish --fix",
     "typecheck": "tsc --noEmit",
     "qa-user-tests": "pnpm exec playwright test --project=\"qa chromium\"",
     "admin-user-tests": "pnpm exec playwright test --project=chromium",
     "test:smoke": "npx playwright test --grep @smoke",
     "test:regression": "npx playwright test --grep @regression",
-    "test:setup": "npx playwright test --grep @SetupUI"
+    "test:setup": "npx playwright test --grep @SetupUI",
+    "merge-reports": "pnpm exec playwright merge-reports --config specs/utils/merge-reporter.config.ts artifacts/**/blob"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "packageManager": "pnpm@10.14.0",
   "devDependencies": {
-    "@eslint/eslintrc": "^3.3.1",
+    "@eslint/eslintrc": "^3.3.5",
     "@eslint/js": "^9.39.1",
     "@playwright/test": "^1.57.0",
-    "@typescript-eslint/parser": "^8.46.4",
+    "@typescript-eslint/parser": "^8.57.2",
     "dotenv": "^17.2.3",
     "eslint": "^9.39.1",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-playwright": "^2.3.0",
     "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-simple-import-sort": "^12.1.1",
+    "playwright": "^1.58.2",
     "prettier": "^3.6.2",
-    "typescript-eslint": "^8.46.4",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.36.0"
   }
 }

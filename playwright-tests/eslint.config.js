@@ -30,6 +30,7 @@ export default [
 
   {
     plugins: { playwright, prettier },
+    files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
       parser,
       parserOptions: {
