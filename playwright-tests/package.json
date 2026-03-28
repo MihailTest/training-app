@@ -12,9 +12,9 @@
     "typecheck": "tsc --noEmit",
     "qa-user-tests": "pnpm exec playwright test --project=\"qa chromium\"",
     "admin-user-tests": "pnpm exec playwright test --project=chromium",
-    "test:smoke": "npx playwright test --grep @smoke",
-    "test:regression": "npx playwright test --grep @regression",
-    "test:setup": "npx playwright test --grep @SetupUI",
+    "test:smoke": "pnpm exec playwright test --grep @smoke",
+    "test:regression": "pnpm exec playwright test --grep @regression",
+    "test:setup": "pnpm exec playwright test --grep @SetupUI",
     "merge-reports": "pnpm exec playwright merge-reports --config specs/utils/merge-reporter.config.ts artifacts/**/blob"
   },
   "keywords": [],

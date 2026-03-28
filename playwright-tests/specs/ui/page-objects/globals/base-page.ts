@@ -1,5 +1,4 @@
 import type { Page, TestInfo } from '@playwright/test';
-import { expect } from '@playwright/test';
 import Helpers from '@ui/page-objects/globals/helpers';
 
 /**
@@ -35,11 +34,9 @@ export abstract class BasePage {
   }
 
   /**
-   * Verify that the current URL matches the expected pattern
-   * @param regexp - Regular expression or string to match against the URL
-   * @param timeout - Optional timeout in milliseconds
+   * Read the current page URL.
    */
-  async shouldHavePath(regexp: string | RegExp, timeout?: number): Promise<void> {
-    await expect(this.page, `Page URL should match ${regexp}`).toHaveURL(regexp, { timeout });
+  async getCurrentUrl(): Promise<string> {
+    return this.page.url();
   }
 }

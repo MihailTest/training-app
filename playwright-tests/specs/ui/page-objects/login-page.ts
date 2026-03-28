@@ -39,7 +39,7 @@ export default class LoginPage extends BasePage {
   @step('navigate to login page')
   async navigateTo(): Promise<void> {
     await super.navigateTo('auth/login');
-    await expect(this.username, 'Username input should be visible').toBeVisible();
+    await this.username.waitFor({ state: 'visible' });
   }
 
   /**
@@ -64,9 +64,7 @@ export default class LoginPage extends BasePage {
     await this.username.fill(username);
     await this.password.fill(password);
     await this.rememberMe.check();
-
-    await expect(this.loginBtn, 'Login button should be enabled').toBeEnabled();
-
+    await this.loginBtn.waitFor({ state: 'visible' });
     await this.helpers.clickOnLocator(this.loginBtn);
   }
 
@@ -85,18 +83,10 @@ export default class LoginPage extends BasePage {
    */
   @step('logout from the application')
   async logout(): Promise<void> {
-    await expect(this.logoutBtn, 'Logout button should be visible before logging out').toBeVisible();
+    await this.logoutBtn.waitFor({ state: 'visible' });
     await this.helpers.clickOnLocator(this.logoutBtn);
     await this.page.waitForLoadState('load');
     await this.toBeLoaded();
-  }
-
-  /**
-   * Assert invalid credentials message is visible
-   */
-  @step('assert invalid credentials message is visible')
-  async expectInvalidCredentialsMessage(): Promise<void> {
-    await expect(this.invalidCredentialsMessage, 'Invalid credentials message should appear').toBeVisible();
   }
 
   /**
@@ -123,8 +113,8 @@ export default class LoginPage extends BasePage {
    */
   @step('wait for post-login actions')
   async waitForPostLogin(): Promise<void> {
-    await expect(this.logoutBtn, 'Logout button should be visible after login').toBeVisible();
-    await expect(this.sideMenu, 'Side-menu should be enabled after login').toBeEnabled();
+    await this.logoutBtn.waitFor({ state: 'visible' });
+    await this.sideMenu.waitFor({ state: 'visible' });
   }
 
   /**
@@ -132,31 +122,37 @@ export default class LoginPage extends BasePage {
    */
   @step('submit login form')
   async submitLogin(): Promise<void> {
-    await expect(this.loginBtn, 'Login button should be visible before submit').toBeVisible();
+    await this.loginBtn.waitFor({ state: 'visible' });
     await this.helpers.clickOnLocator(this.loginBtn);
   }
 
   /**
-   * Assert username input is focused after failed form submission.
+   * Check if invalid credentials message is visible.
    */
-  @step('assert username input is focused')
-  async expectUsernameInputFocused(): Promise<void> {
-    await expect(this.username, 'Username input should be focused').toBeFocused();
+  @step('check invalid credentials visibility')
+  async isInvalidCredentialsMessageVisible(): Promise<boolean> {
+    return await this.invalidCredentialsMessage.isVisible();
   }
 
   /**
-   * Assert browser native required-field validation message for username input.
+   * Check if username input is focused after failed form submission.
    */
-  @step('assert username required-field validation message')
-  async expectUsernameRequiredValidationMessage(): Promise<void> {
-    const isValueMissing = await this.username.evaluate((element) => {
+  @step('check username input focus')
+  async isUsernameInputFocused(): Promise<boolean> {
+    return await this.username.evaluate((element) => element === document.activeElement);
+  }
+
+  /**
+   * Check browser-native required-field validation state for username input.
+   */
+  @step('check username required-field validation')
+  async isUsernameValueMissing(): Promise<boolean> {
+    return await this.username.evaluate((element) => {
       if (!(element instanceof HTMLInputElement)) {
         return false;
       }
 
       return element.validity.valueMissing;
     });
-
-    await expect(isValueMissing, 'Username required field should display browser-native validation state').toBe(true);
   }
 }

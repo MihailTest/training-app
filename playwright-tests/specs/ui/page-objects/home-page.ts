@@ -63,35 +63,6 @@ export default class HomePage extends BasePage {
   }
 
   /**
-   * Validate hero section title and description copy.
-   */
-  @step('verify hero section copy and cards')
-  async verifyHeroCopy(): Promise<void> {
-    await expect(this.welcomeText, 'welcome copy should match expectation').toContainText('Welcome to');
-    await expect(this.heroDescription, 'hero description should match copy').toContainText('UI playground');
-  }
-
-  /**
-   * Verify that all core Form Controls cards are visible.
-   */
-  @step('verify form control cards exist')
-  async verifyFormControlCards(): Promise<void> {
-    for (const [name, locator] of Object.entries(this.formControlCards)) {
-      await expect(locator, `${name} card should be visible`).toBeVisible();
-    }
-  }
-
-  /**
-   * Verify all top-level category headers are rendered with expected text.
-   */
-  @step('verify category headers render')
-  async verifyCategoryHeaders(): Promise<void> {
-    await expect(this.categoryHeaders.browser, 'browser interactions header should exist').toHaveText('Browser Interactions');
-    await expect(this.categoryHeaders.interactive, 'interactive components header should exist').toHaveText('Interactive Components');
-    await expect(this.categoryHeaders.dragDrop, 'drag & drop header should exist').toHaveText('Drag & Drop');
-  }
-
-  /**
    * Click a home card and wait until the target route is loaded.
    * @param dataTestId - The card `data-testid` locator key to click.
    * @param expectedPath - The expected URL path suffix after navigation.
@@ -99,7 +70,7 @@ export default class HomePage extends BasePage {
   @step('click selected card and wait for expected route')
   async clickCard(dataTestId: string, expectedPath: string): Promise<void> {
     const card = this.formControlCards[dataTestId] ?? this.page.getByTestId(dataTestId);
-    await expect(card, `${dataTestId} should be visible`).toBeVisible();
+    await card.waitFor({ state: 'visible' });
     await Promise.all([this.page.waitForURL(new RegExp(`${expectedPath}$`)), this.helpers.clickOnLocator(card)]);
   }
 
@@ -139,12 +110,45 @@ export default class HomePage extends BasePage {
   }
 
   /**
-   * Ensure the page has no horizontal overflow at current viewport.
+   * Read hero section title copy.
    */
-  @step('verify no horizontal overflow')
-  async expectNoHorizontalOverflow(): Promise<void> {
-    const hasNoOverflow = await this.page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth);
-    await expect(hasNoOverflow, 'page should not have horizontal overflow').toBe(true);
+  @step('read hero title copy')
+  async getHeroTitleCopy(): Promise<string> {
+    return await this.welcomeText.innerText();
+  }
+
+  /**
+   * Read hero section description copy.
+   */
+  @step('read hero description copy')
+  async getHeroDescriptionCopy(): Promise<string> {
+    return await this.heroDescription.innerText();
+  }
+
+  /**
+   * Check visibility for all core Form Controls cards.
+   */
+  @step('read form control card visibility')
+  async getFormControlCardVisibility(): Promise<Record<string, boolean>> {
+    const entries = await Promise.all(Object.entries(this.formControlCards).map(async ([name, locator]) => [name, await locator.isVisible()] as const));
+    return Object.fromEntries(entries);
+  }
+
+  /**
+   * Read top-level category header text.
+   */
+  @step('read category header copy')
+  async getCategoryHeaderCopy(): Promise<Record<'browser' | 'interactive' | 'dragDrop', string>> {
+    const [browser, interactive, dragDrop] = await Promise.all([this.categoryHeaders.browser.innerText(), this.categoryHeaders.interactive.innerText(), this.categoryHeaders.dragDrop.innerText()]);
+    return { browser, interactive, dragDrop };
+  }
+
+  /**
+   * Read whether the page has horizontal overflow at the current viewport.
+   */
+  @step('read horizontal overflow state')
+  async hasNoHorizontalOverflow(): Promise<boolean> {
+    return await this.page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth);
   }
 
   /**
@@ -154,18 +158,16 @@ export default class HomePage extends BasePage {
   @step('scroll selected card into view')
   async scrollCardIntoView(dataTestId: string): Promise<void> {
     const card = this.formControlCards[dataTestId] ?? this.page.getByTestId(dataTestId);
-    await expect(card, `${dataTestId} should be visible before scrolling`).toBeVisible();
+    await card.waitFor({ state: 'visible' });
     await card.scrollIntoViewIfNeeded();
   }
 
   /**
-   * Verify desktop viewport width is above a minimum threshold.
-   * @param minWidth - Minimum expected width in pixels.
+   * Read current viewport width.
    */
-  @step('verify desktop viewport minimum width')
-  async expectViewportWidthGreaterThan(minWidth: number): Promise<void> {
-    const viewportWidth = await this.page.evaluate(() => document.documentElement.clientWidth);
-    await expect(viewportWidth, `desktop viewport width should be greater than ${minWidth}`).toBeGreaterThan(minWidth);
+  @step('read viewport width')
+  async getViewportWidth(): Promise<number> {
+    return await this.page.evaluate(() => document.documentElement.clientWidth);
   }
 
   /**
@@ -174,7 +176,7 @@ export default class HomePage extends BasePage {
   @step('recover via home link')
   async recoverFromBadRoute(): Promise<void> {
     if (await this.recoveryLink.count()) {
-      await expect(this.recoveryLink, 'home recovery link should be visible').toBeVisible();
+      await this.recoveryLink.waitFor({ state: 'visible' });
       await Promise.all([this.page.waitForURL(/\/$/), this.helpers.clickOnLocator(this.recoveryLink)]);
     } else {
       await this.page.goto('/', { waitUntil: 'load' });
@@ -183,10 +185,10 @@ export default class HomePage extends BasePage {
   }
 
   /**
-   * Verify student registration card visibility on home hub.
+   * Check student registration card visibility on home hub.
    */
-  @step('ensure student registration card is visible')
-  async verifyStudentRegistrationCard(): Promise<void> {
-    await expect(this.studentRegistrationCard, 'student registration card should be visible').toBeVisible();
+  @step('check student registration card visibility')
+  async isStudentRegistrationCardVisible(): Promise<boolean> {
+    return await this.studentRegistrationCard.isVisible();
   }
 }
