@@ -180,6 +180,13 @@ Notes:
 
 ---
 
+## Agent guidance (Codex/AI)
+
+- Repo-wide rules live in `playwright-tests/AGENTS.md`.
+- Task-specific guidance lives in `playwright-tests/.agents/skills/*`.
+
+---
+
 ## Helpful file locations
 
 - Test config: `playwright-tests/playwright.config.ts`

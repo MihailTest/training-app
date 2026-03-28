@@ -1,0 +1,37 @@
+sandbox_mode = "workspace-write"
+approval_policy = "on-request"
+project_root_markers = [".git"]
+
+model = "gpt-5.2-codex"
+
+[mcp_servers.playwright]
+enabled = true
+command = "npx"
+args = ["@playwright/mcp@latest"]
+startup_timeout_sec = 45
+
+[profiles.review]
+sandbox_mode = "read-only"
+approval_policy = "on-request"
+
+[agents]
+max_threads = 4
+max_depth = 1
+
+[agents.playwright-review-agent]
+description = "Review Playwright specs, page objects, fixtures, and locator stability."
+
+[agents.playwright-writer-agent]
+description = "Write or update Playwright UI specs and page objects using repo fixtures and patterns."
+
+[agents.api-automation-agent]
+description = "Write or update Playwright API tests using shared helpers and typed assertions."
+
+[agents.manual-qa-agent]
+description = "Create manual QA scenarios or exploratory checks aligned with automated coverage."
+
+[agents.db-validation-agent]
+description = "Design read-only DB validation checks and explain what they prove."
+
+[agents.bug-investigation-agent]
+description = "Investigate flaky or failing tests and propose minimal fixes."
