@@ -72,6 +72,9 @@ Good prompts:
 - “Review `specs/ui/page-objects/home-page.ts` for boundary violations and flaky risks.”
 - “Refactor `specs/ui/tests/home.spec.ts` to remove locators from the spec.”
 
+Assertion style:
+- Prefer locator-based expects with messages, e.g. `await expect(locator, 'main container should be visible').toBeVisible();`.
+
 Weak prompts (why they’re weak):
 - “Fix tests.” (No target or failure context)
 - “Make it better.” (No clear outcome)

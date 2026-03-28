@@ -25,6 +25,7 @@ Avoid: XPath, brittle text-only selectors, and `force: true`.
 ### 4. Assertions
 - Assertions stay in specs by default.
 - Page objects may include reusable UI-specific checks (e.g., `toBeLoaded()`).
+- Prefer locator-based assertions with messages, e.g. `await expect(locator, 'main container should be visible').toBeVisible();`.
 
 ### 5. Anti-patterns
 - Hidden business flow inside page objects.

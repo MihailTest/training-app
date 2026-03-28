@@ -12,6 +12,7 @@
 - Use fixtures from specs/utils/ui-fixtures.ts.
 - Call toBeLoaded() before deeper interactions.
 - Keep locators in page objects.
+- Prefer locator-based expects with messages, e.g. await expect(locator, 'main container should be visible').toBeVisible().
 
 ## Notes
 - Avoid hiding business flows inside page objects.

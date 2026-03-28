@@ -196,6 +196,13 @@ Notes:
 
 Normal usage: describe the task directly; explicit agent naming is optional for advanced use.
 
+## Codex (high-level workflow)
+- Use `/plan <request>` for multi-file changes.
+- Implement with a direct request or `/tdd <scope>`.
+- Run targeted tests (`pnpm run typecheck` + a relevant Playwright command).
+- Use `/review <scope>` for quality + security review.
+- Use `/feature-pipeline <request>` when you want a multi-phase workflow.
+
 ---
 
 ## Helpful file locations
