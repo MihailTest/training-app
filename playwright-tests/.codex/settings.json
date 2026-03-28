@@ -1,0 +1,74 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "shell_command",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo \"$TOOL_INPUT\" | findstr /i \"--no-verify\" >NUL && echo BLOCKED: --no-verify is not allowed && exit /b 2 || exit /b 0"
+          }
+        ],
+        "description": "Block git hook-bypass flag"
+      },
+      {
+        "matcher": "shell_command",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo \"$TOOL_INPUT\" | findstr /i /r \"\\<rm\\>.*-rf\\>|--force|--hard\" >NUL && echo BLOCKED: Destructive command detected && exit /b 2 || exit /b 0"
+          }
+        ],
+        "description": "Block destructive shell commands"
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "apply_patch",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if not \"%TOOL_INPUT_FILE_PATH%\"==\"\" (findstr /i /r \"TODO|FIXME|HACK\" \"%TOOL_INPUT_FILE_PATH%\" >NUL && echo WARNING: TODO markers found in edited file)"
+          }
+        ],
+        "description": "Warn about TODO markers in edited files"
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo Session started at %DATE% %TIME%>> .codex\\session.log"
+          }
+        ],
+        "description": "Log session start time"
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo PreCompact at %DATE% %TIME%>> .codex\\session.log"
+          }
+        ],
+        "description": "Log pre-compact event"
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo Session ended at %DATE% %TIME%>> .codex\\session.log"
+          }
+        ],
+        "description": "Log session end time"
+      }
+    ]
+  }
+}
