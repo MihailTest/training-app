@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "lint": "pnpm tsc && pnpm run lint:check",
     "format:check": "prettier . --check",

@@ -1,43 +1,45 @@
 # Playwright Tests (Training App)
 
-This folder is a **standalone Playwright test workspace**. It has its own `package.json` and uses **pnpm**.
-Use this README when you want to run UI tests locally.
+## 1. Overview
 
----
+This folder is a **standalone Playwright test workspace** for the training app UI. It uses page objects, fixtures, and typed test data to keep tests stable and readable.
 
-## 1) Prerequisites
+Core principles:
 
-- Node.js `20.19.1` (see root `.nvmrc`)
-- pnpm `10.14.0` (see `package.json`)
-- The training app running locally at `http://localhost:3000`
+- Specs show the user journey.
+- Page objects expose reusable UI actions/reads.
+- Assertions stay in specs by default.
+- Locators are semantic and live in page objects.
 
----
+## 2. Tech Stack
 
-## Quickstart (two terminals)
+- Playwright (`@playwright/test`)
+- TypeScript
+- pnpm (workspace-local `package.json`)
+- ESLint + Prettier
 
-Terminal 1 (app):
+## 3. Project Structure
 
-```bash
-cd training-app
-npm install
-npm run dev
-```
+Key folders and files:
 
-Terminal 2 (tests):
+- `specs/ui/tests/` UI test specs
+- `specs/ui/page-objects/` page objects
+- `specs/ui/page-objects/globals/` shared base page + helpers
+- `specs/ui/test-data/` test data (credentials and helpers)
+- `specs/utils/` fixtures, constants, types, utilities
+- `specs/config/` global setup and step decorator
+- `.state/` generated auth storage state files
+- `artifacts/` test output (screenshots, traces, reports)
 
-```bash
-cd training-app/playwright-tests
-pnpm install
-pnpm exec playwright install
-pnpm run test:setup
-pnpm run admin-user-tests
-```
+## 4. Setup
 
----
+Prerequisites:
 
-## 2) Install (one-time setup)
+- Node.js `20.19.1`
+- pnpm `10.14.0`
+- Training app running at `BASE_URL` (default `http://localhost:3000`)
 
-From the repo root:
+Install:
 
 ```bash
 cd playwright-tests
@@ -45,15 +47,8 @@ pnpm install
 pnpm exec playwright install
 ```
 
----
-
-## 3) Configure environment
-
-### NOTE: This .env is intentionally committed for this demo repo (non-production).
-
-### Credentials are fake training defaults used by the sample app and tests.
-
-There is already a local `.env` in this folder:
+Environment:
+`playwright-tests/.env` is committed for this demo repo.
 
 ```
 BASE_URL=http://localhost:3000
@@ -63,150 +58,113 @@ ADMIN_USER=admin.user
 ADMIN_PASSWORD="Admin#123"
 ```
 
-If your app runs somewhere else or you use different credentials, update `playwright-tests/.env`.
+## 5. Running Tests
 
----
-
-## 4) Start the app (required for UI tests)
-
-Open a separate terminal at the repo root (the main `training-app/` folder):
-
-```bash
-cd training-app
-npm install
-npm run dev
-```
-
-The UI must be reachable at the `BASE_URL` from your `.env`.
-
----
-
-## 5) Run tests
-
-In another terminal, run the tests from the Playwright workspace folder:
-
-```bash
-cd training-app/playwright-tests
-```
-
-### A) Create login storage state (recommended first)
-
-This logs in as admin + QA and saves session files under `.state/`:
+Create auth storage state (recommended before running UI tests):
 
 ```bash
 pnpm run test:setup
 ```
 
-### B) Run admin user UI tests
+Run admin UI tests:
 
 ```bash
 pnpm run admin-user-tests
 ```
 
-### B1) Run admin smoke tests
+Run smoke or regression:
 
 ```bash
 pnpm run test:smoke
-```
-
-### B2) Run admin regression tests
-
-```bash
 pnpm run test:regression
 ```
 
-### C) Run QA user UI tests (optional)
-
-The QA project is **currently commented out** in `playwright-tests/playwright.config.ts`.
-To enable QA tests:
-
-1. Uncomment the QA project block.
-2. Then run:
-
-```bash
-pnpm run qa-user-tests
-```
-
-### D) Run a single test file
+Run a single spec:
 
 ```bash
 pnpm exec playwright test specs/ui/tests/login.spec.ts --project=chromium
 ```
 
----
-
-## 6) Reports & artifacts
-
-- Test artifacts (screenshots, traces, videos):
-  `playwright-tests/artifacts/<shard>/test-results-artifacts/` (default shard: `local`)
-- HTML report:
+Headed/debug runs (Playwright built-in):
 
 ```bash
-pnpm exec playwright show-report
+pnpm exec playwright test specs/ui/tests/login.spec.ts --project=chromium --headed
 ```
 
----
+QA tests:
+The QA project is commented out in `playwright.config.ts`. Uncomment it and then run:
 
-## 7) Common issues
+```bash
+pnpm run qa-user-tests
+```
 
-**App not running**  
-Make sure the UI is running and `BASE_URL` matches it.
+## 6. How Tests Should Be Written Here
 
-**Login fails / stale sessions**  
-Delete `.state/` and run `pnpm run test:setup` again.
+Follow these repo conventions (based on current code and `AGENTS.md`):
 
-**QA tests command fails**  
-The QA project is disabled by default. Uncomment it in `playwright-tests/playwright.config.ts`.
+- **Specs own the flow and assertions.**
+- **Page objects own locators** and reusable UI actions/reads.
+- **Assertions** stay in specs by default.
+- **Locator order**: `getByRole` -> `getByLabel` -> `getByPlaceholder` -> `getByTestId` -> `getByText` -> `locator`.
+- **Avoid** XPath, `force: true`, and `waitForTimeout`.
+- Use fixtures from `@utils/ui-fixtures` (`specs/utils/ui-fixtures.ts`).
+- Call `toBeLoaded()` before deep interactions.
+- Prefer locator-based expects with messages:
+  `await expect(locator, 'main container should be visible').toBeVisible();`
 
----
+## 7. Debugging & Troubleshooting
 
-## 8) CI / Scheduled workflow
+Common issues:
 
-Workflow file:
+- **App not running**: ensure the app is running and `BASE_URL` matches.
+- **Stale sessions**: delete `.state/` and re-run `pnpm run test:setup`.
+- **Flaky tests**: inspect trace and artifacts in `artifacts/` and look for timing/state/locator issues.
 
-- `.github/workflows/training-ui-scheduled.yml`
+Useful locations:
 
-Current CI flow:
+- Auth setup: `specs/config/global.setup.ts`
+- Storage state paths: `specs/utils/constants.ts`
+- Helpers: `specs/ui/page-objects/globals/helpers.ts`
 
-1. Builds and starts the app in production mode (`npm run build`, `npm run start`).
-2. Waits for app readiness on `BASE_URL`.
-3. Creates auth storage state via setup project (`@SetupUI`).
-4. Runs UI tests in 3 shards on `chromium`.
-5. Optionally merges blob reports on manual trigger (`merge_reports=true`).
+## 8. CI
 
-Notes:
+This workspace is intended to be run from the repo root CI. The workflow file is **not** inside `playwright-tests/`. If present in your full repo, look under `.github/workflows/` (e.g., a scheduled UI workflow). Align local runs with CI by:
 
-- Workflow uses `mcr.microsoft.com/playwright:v1.58.2-jammy` to match `@playwright/test` version.
-- Storage state upload includes hidden files from `.state`.
-- Merge step skips cleanly when blob zip files are not present.
+- Running `pnpm run test:setup` before UI tests.
+- Using the same Playwright version as in `package.json`.
 
----
+## 9. Day-to-Day Contribution Flow
 
-## Agent guidance (Codex/AI)
+1. Understand the change and scope.
+2. Update or add tests in `specs/ui/tests/`.
+3. Add or adjust page object methods in `specs/ui/page-objects/`.
+4. Run `pnpm run typecheck` and a targeted test command.
+5. Review for boundary violations and locator quality.
 
-- Repo-wide rules live in `playwright-tests/AGENTS.md`.
-- Agents live in `playwright-tests/.agents/*.md`.
-- Task-specific skills live in `playwright-tests/.agents/skills/*`.
-- Commands live in `playwright-tests/.agents/commands/*.md`.
-- Codex config lives in `playwright-tests/.codex/config.toml`.
-- Hooks config lives in `playwright-tests/.codex/settings.json`.
-- MCP servers config lives in `playwright-tests/.codex/mcp.json` (or `.vscode/mcp.json` if used locally).
-- Hooks/guardrails are enforced only when using Codex; they are not git hooks.
+## 10. Codex / Agentic Usage (Brief)
 
-Normal usage: describe the task directly; explicit agent naming is optional for advanced use.
+Codex is configured for this workspace but is **not automatic**. You must invoke it. For full instructions, check instructions.md
 
-## Codex (high-level workflow)
-- Use `/plan <request>` for multi-file changes.
-- Implement with a direct request or `/tdd <scope>`.
-- Run targeted tests (`pnpm run typecheck` + a relevant Playwright command).
-- Use `/review <scope>` for quality + security review.
-- Use `/feature-pipeline <request>` when you want a multi-phase workflow.
+Key files:
 
----
+- `AGENTS.md` repo rules
+- `.codex/config.toml` and `.codex/settings.json` configuration and hooks
+- `.agents/` for agents, commands, skills, and workflows
 
-## Helpful file locations
+Typical flow:
 
-- Test config: `playwright-tests/playwright.config.ts`
-- Test specs: `playwright-tests/specs/ui/tests/`
-- Page objects: `playwright-tests/specs/ui/page-objects/`
-- Fixtures/helpers: `playwright-tests/specs/utils/`
+- `/plan <request>` for multi-file work
+- Implement directly or `/tdd <scope>`
+- `/review <scope>` for quality + security
+
+Prompt examples:
+
+- �Add a new test in `specs/ui/tests/login.spec.ts` for invalid password.�
+- �Review `specs/ui/page-objects/home-page.ts` for locator strategy and boundary violations.�
+
+## 11. Maintenance Guidance
+
+- Keep page objects small and focused on a single page or component area.
+- Avoid helper/utility sprawl; prefer page object methods.
+- Refactor only when repetition is real and the change stays local.
+- Keep docs and CI expectations in sync with actual scripts in `package.json`.
