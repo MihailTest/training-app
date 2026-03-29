@@ -182,6 +182,26 @@ Examples:
 - `Use write-test and page-objects skills to add a new UI spec.`
 - `Use selectors-and-locators to improve locator stability in this file.`
 
+Universal page-object template (works for skills and subagents):
+
+- `Create or refactor a page object for [Page Name].`
+- `First, navigate to [URL] and discover:`
+- `1) element roles, labels, and accessible names`
+- `2) form field structure`
+- `3) button names and actions`
+- `Then generate/update the page object and follow all AGENTS rules.`
+
+Universal test-file template (works for skills and subagents):
+
+- `Template: Create Test File`
+- `Create tests for [FEATURE]`
+- `Location: [spec repo location]`
+- `Import from: [fixtures/page objects/test data modules]`
+- `Tags: @[smoke|regression] + @[functional|e2e|api] (second tag reserved for future)`
+- `Structure: test.describe + beforeEach`
+- `Scenarios: [Happy path], [Error case], [Edge case]`
+- `Keep one test per user flow and follow all AGENTS rules.`
+
 ## Subagents In This Repo
 
 Subagents are configured in `.codex/agents/*.toml` and enabled by project config.
@@ -199,6 +219,35 @@ Not needed:
 Prompt pattern:
 
 - `Split into subagents: one for locator quality, one for flaky risk, one for security review. Return a consolidated report.`
+
+### Parallel Agents Usage
+
+- Parallel capacity is shared across implementation and review:
+  - `max_threads = 4`
+  - `max_depth = 1`
+- This means up to 4 subagents can run at the same time total.
+- Review agents and writer agents use the same thread pool.
+
+Implementation prompt example:
+
+- `Use parallel subagents. Spawn 3 playwright-writer-agent workers in parallel:`
+- `1) refactor specs/ui/tests/form-controls.spec.ts`
+- `2) refactor specs/ui/page-objects/form-controls-page.ts`
+- `3) update related test data in specs/ui/test-data/form-controls`
+- `Then merge and run validation commands.`
+
+Review prompt example:
+
+- `Use parallel subagents for review only. Spawn 3 playwright-review-agent reviewers in parallel:`
+- `1) spec flow/assertion review`
+- `2) POM boundary/locator review`
+- `3) flaky-risk review`
+- `Return consolidated findings by severity with file references.`
+
+Subagent-ready page-object template:
+
+- `Use parallel subagents if needed.`
+- `For each page-object task, first do route discovery (roles/labels/names, form structure, button actions), then implement/refactor with repo rules.`
 
 ## Hooks In This Repo
 
