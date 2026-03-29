@@ -1,5 +1,6 @@
 import type { Page, TestInfo } from '@playwright/test';
 import { test as baseTest } from '@playwright/test';
+import FormControlsPage from '@ui/page-objects/form-controls-page.ts';
 import HomePage from '@ui/page-objects/home-page.ts';
 import LoginPage from '@ui/page-objects/login-page.ts';
 
@@ -10,6 +11,7 @@ import LoginPage from '@ui/page-objects/login-page.ts';
 interface TrainingFixtures {
   loginPage: LoginPage;
   homePage: HomePage;
+  formControlsPage: FormControlsPage;
 }
 /**
  * Extended test with page object fixtures
@@ -31,5 +33,8 @@ export const test = baseTest.extend<TrainingFixtures>({
   },
   homePage: async ({ page }: { page: Page }, use, testInfo: TestInfo) => {
     await use(new HomePage(page, testInfo));
+  },
+  formControlsPage: async ({ page }: { page: Page }, use, testInfo: TestInfo) => {
+    await use(new FormControlsPage(page, testInfo));
   },
 });
