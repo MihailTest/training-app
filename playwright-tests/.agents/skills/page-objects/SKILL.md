@@ -25,6 +25,10 @@ You keep page objects reusable and specs readable as user journeys.
 
 - Load references/conventions.md before page object work.
 - Keep one page or component per page object.
+- Declare locators/selectors as private readonly fields at the top of the page object, constructor-initialized.
+- Use method-level locators only for dynamic/parameterized selectors that cannot be declared statically.
+- For create/refactor tasks, discover target page(s) first (roles/labels/accessible names, form structure, button names/actions) before choosing locators.
+- Do not guess selectors; keep only selectors validated from page discovery.
 
 ## STRATEGY
 

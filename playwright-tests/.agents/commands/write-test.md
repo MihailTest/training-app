@@ -16,6 +16,19 @@ Input: $ARGUMENTS
 5. Add or extend page object methods only for reusable UI actions/reads.
 6. Run targeted tests if requested.
 
+## UNIVERSAL TEMPLATE
+
+`Template: Create Test File`
+`Create tests for [FEATURE]`
+`Location: [spec repo location]`
+`Import from: [fixtures/page objects/test data modules]`
+`Tags: @[smoke|regression] + @[functional|e2e|api] (second tag reserved for future)`
+`Structure: test.describe + beforeEach`
+`Scenarios:`
+`- [Happy path]`
+`- [Error case]`
+`- [Edge case]`
+
 ## DISPATCH
 
 If the task is complex, delegate to the Playwright writer agent:
@@ -34,6 +47,9 @@ ALWAYS_DO:
 - Keep the user journey readable in the spec.
 - Place assertions in specs by default.
 - Use fixtures and existing test data helpers.
+- Keep one test per user flow.
+- Use `test.describe` and `beforeEach` for shared setup when creating new test files.
+- Include a primary risk-focused negative/error scenario and one edge scenario when applicable.
 
 NEVER_DO:
 

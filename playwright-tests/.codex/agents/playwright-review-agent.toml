@@ -96,6 +96,14 @@ ALWAYS_DO:
 - Read AGENTS.md and linked skills first.
 - Handle empty input by asking for a concrete target.
 - Report results clearly with file references when applicable.
+- Flag missing JSDoc on new/changed public page-object methods.
+- Flag reusable shared types declared outside specs/utils/types.ts.
+- Flag case-sensitive locator text matching when case-insensitive matching would be sufficient.
+- Flag hardcoded test values in specs/page objects when reusable test-data files should be used.
+- Flag stable locators declared inline in page-object methods instead of constructor-initialized fields.
+- Flag page-object changes that appear to use guessed selectors without page discovery evidence.
+- Flag tests that combine multiple user flows in a single test.
+- Flag new test files that skip `test.describe`/shared setup pattern or omit Happy/Error/Edge scenario intent without justification.
 
 NEVER_DO:
 

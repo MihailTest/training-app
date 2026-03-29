@@ -25,6 +25,15 @@ You write UI specs that keep the user journey explicit and assertions in specs.
 
 - Load references/conventions.md before writing or refactoring specs.
 - Use fixtures from specs/utils/ui-fixtures.ts.
+- Public page-object methods must include JSDoc.
+- Reusable shared types belong in specs/utils/types.ts, not in specs/page objects.
+- Default locator text matching to case-insensitive patterns unless exact copy-sensitive matching is required.
+- In page objects, keep stable locators declared as private readonly fields (constructor-initialized).
+- Use method-level locators only for dynamic/parameterized selector cases.
+- Prefer reusable test data from specs/ui/test-data instead of hardcoding values in specs/page objects.
+- Keep literals inline only when they are truly one-off and extraction adds no practical reuse.
+- For new test files, follow template: feature, location, imports, tags, `test.describe` + `beforeEach` only when necessary, and Happy/Error/Edge scenarios.
+- Keep one test per user flow; split scenarios instead of combining unrelated flows.
 
 ## STRATEGY
 

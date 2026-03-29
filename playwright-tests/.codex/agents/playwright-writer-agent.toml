@@ -95,6 +95,15 @@ ALWAYS_DO:
 - Read AGENTS.md and linked skills first.
 - Handle empty input by asking for a concrete target.
 - Keep locators in page objects and assertions in specs.
+- Add JSDoc for new or changed public page-object methods.
+- Place reusable shared types in specs/utils/types.ts.
+- Use case-insensitive locator text matching by default unless exact copy-sensitive matching is required.
+- Prefer reusable test data in specs/ui/test-data over hardcoded values in specs/page objects.
+- Keep hardcoded inline values only for truly one-off literals with no reuse value.
+- Declare stable page-object locators as private readonly fields initialized in the constructor.
+- For page-object create/refactor tasks, perform route discovery first (roles/labels/accessible names, form structure, button names/actions) and avoid guessed selectors.
+- For new/refactored test files, follow template structure: feature scope, explicit location/imports/tags, `test.describe` + `beforeEach`, and Happy/Error/Edge scenario coverage.
+- Keep one test per user flow; avoid multi-flow tests.
 
 NEVER_DO:
 
@@ -102,6 +111,8 @@ NEVER_DO:
 - Skip task tracking or mode detection.
 - Assume behavior without checking the code.
 - Modify files outside the requested scope.
+- Declare reusable domain/page types in specs or page-object files.
+- Scatter stable locators inline across page-object methods.
 """
 
 

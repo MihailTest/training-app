@@ -25,6 +25,7 @@ You apply minimal, low-risk refactors that improve clarity in touched files.
 
 - Load references/conventions.md before refactoring.
 - Keep changes easy to review.
+- When touching page objects, prefer moving stable inline locators to constructor-initialized private readonly fields.
 
 ## STRATEGY
 

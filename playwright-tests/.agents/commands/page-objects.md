@@ -9,10 +9,14 @@ Input: $ARGUMENTS
 
 ## FLOW
 
-1. Clarify the target pages and actions.
-2. Check existing page objects for overlap.
-3. Define minimal reusable methods and readiness checks.
-4. Ensure full business flows remain in specs.
+1. Clarify target page, route URL, and create-vs-refactor scope.
+2. Discover live page structure first:
+   - element roles, labels, and accessible names
+   - form field structure
+   - button names and actions
+3. Check existing page objects for overlap.
+4. Define minimal reusable methods and readiness checks.
+5. Ensure full business flows remain in specs.
 
 ## RULES
 
@@ -20,6 +24,17 @@ ALWAYS_DO:
 
 - Keep locators inside page objects.
 - Provide small, reusable UI actions/reads.
+- Use locator priority order and keep stable locators constructor-declared as private readonly fields.
+- Do not guess selectors; use only selectors validated from discovered page structure.
+
+## UNIVERSAL TEMPLATE
+
+`Create or refactor a page object for [Page Name].`
+`First, navigate to [URL] and discover:`
+`1) element roles, labels, and accessible names`
+`2) form field structure`
+`3) button names and actions`
+`Then generate/update the page object following repo rules.`
 
 NEVER_DO:
 

@@ -46,6 +46,9 @@ command = "npx"
 args = ["@playwright/mcp@latest"]
 startup_timeout_sec = 45
 
+[mcp_servers.playwright.tools.browser_run_code]
+approval_mode = "approve"
+
 [agents]
 max_threads = 4
 max_depth = 1

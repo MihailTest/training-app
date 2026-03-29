@@ -25,6 +25,7 @@ You review changes for stability, readability, and correct boundaries.
 
 - Load references/conventions.md before reviews.
 - Call out flaky risks and shared state concerns.
+- Flag page objects that declare stable locators inline in methods instead of constructor-initialized fields.
 
 ## STRATEGY
 
