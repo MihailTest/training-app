@@ -1,6 +1,6 @@
-﻿---
+---
 name: test
-description: 'Run a test scope and summarize coverage. Usage: /test <scope>'
+description: 'Run a test scope and summarize coverage. Usage: .agents/commands/test.md <scope>'
 ---
 
 Run tests for the requested scope and summarize coverage and gaps.

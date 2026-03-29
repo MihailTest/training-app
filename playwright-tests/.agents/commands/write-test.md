@@ -1,6 +1,6 @@
-﻿---
+---
 name: write-test
-description: 'Write a new UI test for a given scenario. Usage: /write-test <scenario>'
+description: 'Write a new UI test for a given scenario. Usage: .agents/commands/write-test.md <scenario>'
 ---
 
 Create a new UI test with clear user flow and stable assertions.

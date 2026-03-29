@@ -1,6 +1,6 @@
-﻿---
+---
 name: test-data-strategy
-description: 'Design stable test data for a scenario. Usage: /test-data-strategy <scenario>'
+description: 'Design stable test data for a scenario. Usage: .agents/commands/test-data-strategy.md <scenario>'
 ---
 
 Design stable test data and setup for the requested scenario.

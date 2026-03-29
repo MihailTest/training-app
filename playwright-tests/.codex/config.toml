@@ -4,6 +4,9 @@ project_root_markers = [".git"]
 
 model = "gpt-5.3-codex"
 
+[features]
+codex_hooks = true
+
 [profiles.development]
 sandbox_mode = "workspace-write"
 approval_policy = "on-request"
@@ -16,6 +19,27 @@ approval_policy = "on-request"
 sandbox_mode = "read-only"
 approval_policy = "on-request"
 
+[mcp_servers.github]
+enabled = true
+command = "npx"
+args = ["-y", "@modelcontextprotocol/server-github"]
+startup_timeout_sec = 45
+
+[mcp_servers.github.env]
+GITHUB_PERSONAL_ACCESS_TOKEN = "YOUR_GITHUB_PAT_HERE"
+
+[mcp_servers.context7]
+enabled = true
+command = "npx"
+args = ["-y", "@upstash/context7-mcp@latest"]
+startup_timeout_sec = 45
+
+[mcp_servers.sequential-thinking]
+enabled = true
+command = "npx"
+args = ["-y", "@modelcontextprotocol/server-sequential-thinking"]
+startup_timeout_sec = 45
+
 [mcp_servers.playwright]
 enabled = true
 command = "npx"
@@ -25,30 +49,3 @@ startup_timeout_sec = 45
 [agents]
 max_threads = 4
 max_depth = 1
-
-[agents.architecture-review-agent]
-description = "Review framework structure, layering, duplication, and maintainability."
-
-[agents.playwright-review-agent]
-description = "Review Playwright specs, page objects, locators, assertions, and flaky risks."
-
-[agents.playwright-writer-agent]
-description = "Write or refactor Playwright UI tests and page object methods."
-
-[agents.api-automation-agent]
-description = "Create or update API tests with shared validation and negative cases."
-
-[agents.manual-qa-agent]
-description = "Provide manual QA scenarios and exploratory coverage ideas."
-
-[agents.db-validation-agent]
-description = "Propose read-only DB validation checks and explain what they prove."
-
-[agents.security-reviewer-agent]
-description = "Review changes for OWASP Top 10 risks and critical security patterns."
-
-[agents.pm-agent]
-description = "Clarify requirements and acceptance criteria before implementation."
-
-[agents.architect-agent]
-description = "Design test architecture, page object boundaries, and fixtures before implementation."

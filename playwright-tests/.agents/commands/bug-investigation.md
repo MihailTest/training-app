@@ -1,9 +1,9 @@
-﻿---
+---
 name: bug-investigation
-description: 'Investigate flaky UI tests and identify root causes. Usage: /bug-investigation <test name or error>'
+description: 'Deep investigation for flaky tests or functional bugs with root-cause evidence. Usage: .agents/commands/bug-investigation.md <test name or error>'
 ---
 
-Investigate flaky tests and identify likely root causes with minimal fixes.
+Investigate flaky tests or functional bugs with deeper root-cause analysis and minimal fix proposals.
 
 Input: $ARGUMENTS
 
@@ -11,8 +11,8 @@ Input: $ARGUMENTS
 
 1. Review the failure output and affected test files.
 2. Check for timing issues, shared state, and unstable selectors.
-3. Identify race conditions or missing waits on UI state.
-4. Propose minimal stabilizations and verification steps.
+3. Trace likely execution path and identify root-cause candidates.
+4. Propose minimal stabilizations or fixes and verification steps.
 
 ## RULES
 
@@ -21,6 +21,7 @@ ALWAYS_DO:
 - Tie hypotheses to specific lines and UI behavior.
 - Prefer state-based waits over timeouts.
 - Keep the user flow explicit in any proposed fix.
+- Include evidence and confidence for the primary root cause.
 
 NEVER_DO:
 
@@ -35,4 +36,4 @@ NEVER_DO:
 
 ## OUTPUT
 
-- Likely root causes, suggested fixes, and how to verify.
+- Primary root cause, supporting evidence, minimal fixes, and how to verify.

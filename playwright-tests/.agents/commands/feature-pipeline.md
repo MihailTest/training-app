@@ -1,6 +1,6 @@
 ---
 name: feature-pipeline
-description: 'Run the multi-agent feature pipeline. Usage: /feature-pipeline <request>'
+description: 'Run the multi-agent feature pipeline. Usage: .agents/commands/feature-pipeline.md <request>'
 ---
 
 Run the feature pipeline defined in .agents/workflows/feature-pipeline.yaml.

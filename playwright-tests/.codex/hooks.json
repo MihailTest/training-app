@@ -2,7 +2,7 @@
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "shell_command",
+        "matcher": "Bash",
         "hooks": [
           {
             "type": "command",
@@ -12,7 +12,7 @@
         "description": "Block git hook-bypass flag"
       },
       {
-        "matcher": "shell_command",
+        "matcher": "Bash",
         "hooks": [
           {
             "type": "command",
@@ -20,18 +20,6 @@
           }
         ],
         "description": "Block destructive shell commands"
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "apply_patch",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "if not \"%TOOL_INPUT_FILE_PATH%\"==\"\" (findstr /i /r \"TODO|FIXME|HACK\" \"%TOOL_INPUT_FILE_PATH%\" >NUL && echo WARNING: TODO markers found in edited file)"
-          }
-        ],
-        "description": "Warn about TODO markers in edited files"
       }
     ],
     "SessionStart": [

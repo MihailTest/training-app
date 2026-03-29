@@ -1,6 +1,6 @@
-﻿---
+---
 name: db-validation
-description: 'Design read-only DB validation checks tied to a test. Usage: /db-validation <scenario>'
+description: 'Design read-only DB validation checks tied to a test. Usage: .agents/commands/db-validation.md <scenario>'
 ---
 
 Design safe, read-only DB checks and explain what each proves.

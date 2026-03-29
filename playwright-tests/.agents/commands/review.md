@@ -1,6 +1,6 @@
 ---
 name: review
-description: 'Review changes for quality and stability. Usage: /review <scope>'
+description: 'Review an explicit file/scope for quality and stability. Usage: .agents/commands/review.md <scope>'
 ---
 
 Review the specified files or change scope for quality, stability, and security risks.

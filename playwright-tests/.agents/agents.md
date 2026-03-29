@@ -1,8 +1,7 @@
 # Agents (Codex)
 
-Each agent is a standalone markdown file in `.agents/` with YAML frontmatter
-defining name, description, model, tools, and skills. The body defines identity,
-steps, and explicit ALWAYS_DO/NEVER_DO rules.
+Runtime agents are TOML files in `.codex/agents/` and are discovered by Codex there.
+The `.agents/` folder contains command templates, skills, and workflow references.
 
 ## Model Routing (Codex)
 
@@ -25,16 +24,16 @@ steps, and explicit ALWAYS_DO/NEVER_DO rules.
 
 ## Working Together (Feature Lifecycle)
 
-1. /plan <request>
+1. `.agents/commands/plan.md <request>`
    - Produces a phased plan and explicit acceptance criteria.
 2. Implement the approved plan (use the relevant writer agent).
-3. /review
+3. `.agents/commands/review.md <scope>`
    - Reviews changes for quality, stability, and boundary violations.
 
-Optional: /feature-pipeline <request>
+Optional: `.agents/commands/feature-pipeline.md <request>`
 
 - Runs the multi-phase pipeline with validation gates and context contracts.
 
 ## Guardrails
 
-- Hooks are configured in .codex/settings.json and run automatically.
+- Hooks are configured in `.codex/hooks.json` and enabled via `[features].codex_hooks = true` in `.codex/config.toml`.

@@ -1,6 +1,6 @@
-﻿---
+---
 name: refactor-test
-description: 'Refactor tests for readability without behavior changes. Usage: /refactor-test <target>'
+description: 'Refactor tests for readability without behavior changes. Usage: .agents/commands/refactor-test.md <target>'
 ---
 
 Improve test readability and boundaries without changing behavior.

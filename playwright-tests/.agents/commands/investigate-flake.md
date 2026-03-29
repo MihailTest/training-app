@@ -1,9 +1,9 @@
-﻿---
+---
 name: investigate-flake
-description: 'Investigate flaky tests and propose minimal fixes. Usage: /investigate-flake <test>'
+description: 'Quick flaky-test triage with fast hypotheses and next checks. Usage: .agents/commands/investigate-flake.md <test>'
 ---
 
-Identify likely causes of flaky tests and propose minimal fixes.
+Run a quick flaky-test triage: identify likely causes, confidence level, and next verification checks.
 
 Input: $ARGUMENTS
 
@@ -12,14 +12,14 @@ Input: $ARGUMENTS
 1. Review the failure output and affected test files.
 2. Check for timing issues, shared state, and unstable selectors.
 3. Identify race conditions or missing waits on UI state.
-4. Propose minimal stabilizations and verification steps.
+4. Rank top hypotheses by confidence and list fastest checks to confirm.
 
 ## RULES
 
 ALWAYS_DO:
 
 - Tie hypotheses to specific lines and UI behavior.
-- Suggest fixes that keep the user flow explicit.
+- Keep output short and triage-first.
 - Prefer state-based waits over timeouts.
 
 NEVER_DO:
@@ -36,4 +36,4 @@ NEVER_DO:
 
 ## OUTPUT
 
-- Likely root causes, suggested fixes, and how to verify.
+- Top likely causes, confidence, and quickest next checks.

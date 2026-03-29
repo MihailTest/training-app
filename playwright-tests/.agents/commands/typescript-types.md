@@ -1,6 +1,6 @@
-﻿---
+---
 name: typescript-types
-description: 'Review or propose TypeScript types for a change. Usage: /typescript-types <target>'
+description: 'Review or propose TypeScript types for a change. Usage: .agents/commands/typescript-types.md <target>'
 ---
 
 Review or propose TypeScript types for the requested change.

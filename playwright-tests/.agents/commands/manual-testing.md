@@ -1,6 +1,6 @@
-﻿---
+---
 name: manual-testing
-description: 'Provide manual QA scenarios for a flow. Usage: /manual-testing <scenario>'
+description: 'Provide manual QA scenarios for a flow. Usage: .agents/commands/manual-testing.md <scenario>'
 ---
 
 Provide manual test scenarios focused on user journeys and observable outcomes.

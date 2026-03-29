@@ -1,6 +1,6 @@
-﻿---
+---
 name: selectors-and-locators
-description: 'Audit locator strategy for a given test or page. Usage: /selectors-and-locators <target>'
+description: 'Audit locator strategy for a given test or page. Usage: .agents/commands/selectors-and-locators.md <target>'
 ---
 
 Audit locator strategy and suggest stable selectors.

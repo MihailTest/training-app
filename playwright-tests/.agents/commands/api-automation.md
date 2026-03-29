@@ -1,6 +1,6 @@
-﻿---
+---
 name: api-automation
-description: 'Create or update API tests with validation and negative cases. Usage: /api-automation <endpoint or scenario>'
+description: 'Create or update API tests with validation and negative cases. Usage: .agents/commands/api-automation.md <endpoint or scenario>'
 ---
 
 Create or update API tests with shared validation, auth coverage, and negative cases.

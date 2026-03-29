@@ -1,6 +1,6 @@
 ---
 name: plan
-description: 'Create a phased plan for a request. Usage: /plan <request>'
+description: 'Create a phased implementation plan for a request (new work or broad task). Usage: .agents/commands/plan.md <request>'
 ---
 
 Create a phased plan for the request, with risks and acceptance criteria.

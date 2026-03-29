@@ -1,6 +1,6 @@
-﻿---
+---
 name: review-changes
-description: 'Review uncommitted changes for quality and risk. Usage: /review-changes'
+description: 'Review the current working tree (uncommitted changes) for quality and risk. Usage: .agents/commands/review-changes.md'
 ---
 
 Inspect changed files, assess quality and risks, and summarize findings.

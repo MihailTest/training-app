@@ -1,6 +1,6 @@
-﻿---
+---
 name: page-objects
-description: 'Review or design page object methods for reuse. Usage: /page-objects <target>'
+description: 'Review or design page object methods for reuse. Usage: .agents/commands/page-objects.md <target>'
 ---
 
 Review or design page object methods for reusable UI actions and reads.

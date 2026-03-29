@@ -1,6 +1,6 @@
 ---
 name: tdd
-description: 'Run a test-driven implementation cycle. Usage: /tdd <phase or scope>'
+description: 'Run a test-driven implementation cycle. Usage: .agents/commands/tdd.md <phase or scope>'
 ---
 
 Run a test-driven cycle for the requested phase or scope.

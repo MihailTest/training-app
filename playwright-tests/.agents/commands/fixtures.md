@@ -1,6 +1,6 @@
-﻿---
+---
 name: fixtures
-description: 'Plan or update shared fixtures and test context. Usage: /fixtures <need>'
+description: 'Plan or update shared fixtures and test context. Usage: .agents/commands/fixtures.md <need>'
 ---
 
 Plan or update shared fixtures and test context for Playwright tests.
