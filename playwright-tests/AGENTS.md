@@ -46,8 +46,8 @@ playwright-tests/
 |-- specs/ui/tests/         # UI specs
 |-- specs/ui/page-objects/  # Page objects
 |-- specs/utils/            # Fixtures and helpers
-|-- workflows/              # Repeatable task guides
-|-- .agents/                # Agent roles and skills
+|-- .agents/workflows/      # Repeatable task guides (reference)
+|-- .agents/                # Commands, skills, and workflow references
 |-- .codex/                 # Codex config
 ```
 
@@ -65,6 +65,7 @@ pnpm run admin-user-tests
 ## Verification Rule (Required)
 
 After any code or doc changes, run:
+
 - `pnpm run typecheck`
 - `pnpm run lint`
 - `pnpm run format:check`
@@ -100,17 +101,25 @@ ADMIN_PASSWORD="Admin#123"
 ## AI System Map (Pillars)
 
 - Project brain: `AGENTS.md` (this file).
-- Agents: `.agents/*.md`.
+- Agents runtime config: `.codex/agents/*.toml`.
+- Commands/skills/workflow references: `.agents/commands/`, `.agents/skills/`, `.agents/workflows/`.
 - Skills: `.agents/skills/*/SKILL.md`.
 - Commands: `.agents/commands/*.md`.
-- Hooks/guardrails and capability config: `.codex/settings.json`, `.codex/config.toml`, `.codex/mcp.json`, and `.vscode/mcp.json` if used locally.
+- Hooks and capability config: `.codex/hooks.json` and `.codex/config.toml`.
+- IDE-local MCP (optional): `.vscode/mcp.json`.
 
 ## Commands
 
 Commands are markdown files in `.agents/commands/` with YAML frontmatter:
 
-- `name`: slash command name (must match filename).
-- `description`: include usage example with arguments.
+- `name`: command name (must match filename).
+- `description`: include a concrete usage example with arguments.
+
+Run commands using file-path invocation (not slash menu discovery):
+
+- Provide the command file path and the target file path(s) in your request.
+- Example: `.agents/commands/review.md specs/ui/page-objects/home-page.ts`.
+- If arguments are needed, append them after the command path.
 
 The body should use `Input: $ARGUMENTS`, a numbered `FLOW`, and `RULES`
 with `ALWAYS_DO` and `NEVER_DO`.

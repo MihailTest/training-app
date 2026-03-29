@@ -143,24 +143,13 @@ This workspace is intended to be run from the repo root CI. The workflow file is
 
 ## 10. Codex / Agentic Usage (Brief)
 
-Codex is configured for this workspace but is **not automatic**. You must invoke it. For full instructions, check instructions.md
+Codex is configured for this workspace, but usage is manual.
+Use instructions.md as the primary operational guide.
 
-Key files:
+Quick entry points:
 
-- `AGENTS.md` repo rules
-- `.codex/config.toml` and `.codex/settings.json` configuration and hooks
-- `.agents/` for agents, commands, skills, and workflows
-
-Typical flow:
-
-- `/plan <request>` for multi-file work
-- Implement directly or `/tdd <scope>`
-- `/review <scope>` for quality + security
-
-Prompt examples:
-
-- �Add a new test in `specs/ui/tests/login.spec.ts` for invalid password.�
-- �Review `specs/ui/page-objects/home-page.ts` for locator strategy and boundary violations.�
+- Built-in CLI checks: /status, /permissions, /review
+- Repo prompt templates: .agents/commands/plan.md <request>, .agents/commands/tdd.md <scope>, .agents/commands/review.md <scope>
 
 ## 11. Maintenance Guidance
 

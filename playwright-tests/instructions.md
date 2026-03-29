@@ -1,145 +1,283 @@
 # Codex Usage Guide (Playwright Tests)
 
-## 1. Overview
+## Executive Summary
 
-This is a **human-focused guide** for using Codex in this repo. The setup helps with Playwright test work (planning, implementation, review, flaky investigation, API checks, DB validation). It is not full automation. You still decide scope and approve changes; Codex helps execute and review within repo rules.
+This repository is configured for OpenAI Codex CLI with project rules, project config, hooks, skills, and custom subagents.
+Use this file as the primary operational guide.
 
-High-level layout:
+Core operating rule:
 
-- **Agents**: specialist roles in `.agents/*.md`
-- **Commands**: workflow shortcuts in `.agents/commands/*.md`
-- **Skills**: domain knowledge in `.agents/skills/*`
-- **Pipelines**: multi-phase orchestration in `.agents/workflows/feature-pipeline.yaml`
-- **Hooks**: guardrails in `.codex/settings.json`
+- Start with scoped analysis.
+- Approve minimal implementation.
+- Run required validation commands.
+- Finish with review.
 
-## 2. Files That Control Codex Behavior
+## Current Codex Setup In This Repo
 
-- `AGENTS.md`: repo-wide rules and boundaries. This is the top-level source of truth.
-- `.codex/config.toml`: Codex configuration, models, profiles, and agent registrations.
-- `.agents/*.md`: agent definitions (writer/reviewer/PM/architect/security).
-- `.agents/skills/*/SKILL.md`: skill summaries; workflows and references live alongside each skill.
-- `.agents/workflows/feature-pipeline.yaml`: pipeline definition for multi-phase orchestration.
-- `.agents/commands/*.md`: slash commands that Codex can run as workflow shortcuts.
-- `.codex/settings.json`: hooks/guardrails (e.g., block destructive flags).
-- `.codex/mcp.json` and `.vscode/mcp.json`: MCP server configuration.
+### Codex-relevant files and purpose
 
-## 3. How Codex Works In This Repo
+- `AGENTS.md`
+  - Repo instruction source of truth for boundaries, locator strategy, assertions, and required checks.
+- `.codex/config.toml`
+  - Project config for model, sandbox and approval policy, profiles, MCP servers, and subagent thread limits.
+- `.codex/hooks.json`
+  - Command guardrails and session logging hooks.
+- `.codex/agents/*.toml`
+  - Custom subagent definitions used by Codex.
+- `.agents/skills/*/SKILL.md`
+  - Domain-specific skill packs and workflows.
+- `.agents/commands/*.md`
+  - Repo prompt templates invoked by file path in user prompts.
+- `.agents/workflows/feature-pipeline.yaml`
+  - Reference workflow design; guidance only.
+- `.vscode/mcp.json`
+  - IDE-local MCP config; optional and separate from CLI config.
 
-Simple, real flow:
+## Step-by-Step User Guide
 
-1. Codex reads **`AGENTS.md`** and obeys repo rules and boundaries.
-2. It loads the **Codex config** from `.codex/config.toml` (model selection, profiles, agent registry).
-3. **Skills** are used on demand by agents to apply domain guidance.
-4. **Commands** (e.g., `/plan`, `/review`, `/tdd`) are manual entry points; they are not automatic.
-5. **Workflows** (`feature-pipeline.yaml`) define a multi-phase pipeline but do not run unless you call `/feature-pipeline`.
+### 1. Start Codex in the repo root
 
-Automatic vs manual:
+```bash
+cd D:\projects\training-app\playwright-tests
+codex
+```
 
-- **Automatic**: Codex rules (AGENTS.md) and hooks in `.codex/settings.json` (when using Codex).
-- **Manual**: Running commands, selecting agents, choosing profiles, and running tests.
+### 2. Confirm session settings before work
 
-Profiles:
+- Run `/status` to confirm active model, approval policy, and writable roots.
+- Run `/permissions` if you need stricter or looser approval behavior.
 
-- Defined in `.codex/config.toml` (`development`, `review`, `conservative`).
-- They are **not auto-selected**. You choose them in the Codex UI/session.
+### 3. Build codebase understanding first
 
-## 4. Day-to-Day Usage
+- Ask for analysis-only mapping before edits.
+- Point Codex to explicit folders or files.
 
-Typical entry points:
+Example:
 
-- **Start work**: `/plan <request>` for any change touching multiple files.
-- **Implement**: ask for a change directly or use `/tdd <scope>`.
-- **Review**: `/review <scope>` to run quality + security review.
+- `Analyze specs/ui/tests, specs/ui/page-objects, and specs/utils. Explain boundaries and risks. Analysis only, no edits.`
 
-Use specialized help:
+### 4. Ask for safe analysis first
 
-- **Flaky investigation**: “Investigate flake in `specs/ui/tests/login.spec.ts`.”
-- **API help**: “Add API test coverage for X and include negative cases.”
-- **DB validation**: “Propose read-only DB checks after Y.”
+- Explicitly say: `analysis only`, `no file changes`, `propose options`.
+- Ask Codex to validate assumptions first.
 
-## 5. What To Run And When
+Example:
 
-- **Use `review` profile** for code review or audit tasks (read-only behavior).
-- **Use `development` profile** for implementation or refactors.
-- **After changes**: run `pnpm run typecheck`, `pnpm run lint`, and `pnpm run format:check`.
-- **After UI changes**: run a targeted Playwright test:
-  - For UI tests: `pnpm run admin-user-tests` or a single spec.
-  - For setup: `pnpm run test:setup` if auth state is stale.
-- **Use workflows** when the change is multi-step or involves multiple roles.
-- **Skip workflows** for small edits or single-file tweaks.
-- **Explicit agent selection** is useful when you need a specialist:
-  - `playwright-review-agent` for test reviews
-  - `security-reviewer-agent` for OWASP checks
-  - `bug-investigation` skill for flake analysis
-  - `db-validation-agent` for DB checks
+- `Validate these assumptions before editing: [list assumptions]. If unsupported by official Codex docs, mark as not verified.`
 
-## 6. Prompt-Writing Guide
+### 5. Ask for implementation
 
-Be direct and specific. Include:
+- Provide concrete scope, target files, and constraints.
+- Require minimal changes and boundary compliance.
 
-- **Scope** (files or areas)
-- **Desired outcome**
-- **Constraints** (e.g., “no refactor”, “minimal changes”)
+Example:
 
-Good prompts:
+- `Implement a new login failure test in specs/ui/tests/login.spec.ts with minimal changes. Keep locators in page objects and assertions in specs.`
 
-- “Add a new UI test for login failure in `specs/ui/tests/login.spec.ts`. Keep locators in page objects.”
-- “Review `specs/ui/page-objects/home-page.ts` for boundary violations and flaky risks.”
-- “Refactor `specs/ui/tests/home.spec.ts` to remove locators from the spec.”
+### 6. Ask for review-only
 
-Assertion style:
+- Use built-in `/review` for working tree review.
+- Or use scope review prompt with no edits.
 
-- Prefer locator-based expects with messages, e.g. `await expect(locator, 'main container should be visible').toBeVisible();`.
+Examples:
 
-Weak prompts (why they’re weak):
+- `/review`
+- `Review specs/ui/page-objects/home-page.ts for boundary and locator issues. Findings only, no edits.`
 
-- “Fix tests.” (No target or failure context)
-- “Make it better.” (No clear outcome)
-- “Add API tests” (No endpoint or expected behavior)
+### 7. Ask for refactoring
 
-## 7. Examples (Copy/Paste)
+- Require behavior-preserving refactor and local scope.
 
-Architecture review:
+Example:
 
-- “Review the structure of `specs/ui/page-objects/` and call out boundary violations or duplication.”
+- `Refactor specs/ui/tests/home.spec.ts for readability only. No behavior change, no cross-folder refactor.`
 
-Playwright test review:
+### 8. Ask for test creation
 
-- “/review `specs/ui/tests/login.spec.ts`”
+- State test intent, setup assumptions, and assertion expectations.
 
-Write a new Playwright test:
+Example:
 
-- “Add a new test in `specs/ui/tests/home.spec.ts` that verifies the dashboard loads. Use page object methods only.”
+- `Add a UI test for invalid password in specs/ui/tests/login.spec.ts. Reuse existing fixtures and page-object patterns.`
 
-Refactor a page object or spec:
+### 9. Ask for flaky test investigation
 
-- “Refactor `specs/ui/page-objects/login-page.ts` to add a `toBeLoaded()` check and update specs to use it.”
+- Choose quick triage or deep investigation template.
 
-Flaky test investigation:
+Examples:
 
-- “Investigate flake in `specs/ui/tests/login.spec.ts` around the submit step. Focus on timing/state issues.”
+- `.agents/commands/investigate-flake.md specs/ui/tests/login.spec.ts`
+- `.agents/commands/bug-investigation.md specs/ui/tests/login.spec.ts`
 
-API automation help:
+### 10. Ask for cleanup and deduplication
 
-- “Add API test coverage for `GET /api/v1/users` with pagination, filtering, and a 401 case.”
+- Start with candidate list only, then approve edits in a second pass.
 
-DB validation help:
+Example:
 
-- “Propose read-only DB checks to validate a user is created after signup.”
+- `Find dead files or duplicate templates under .agents. Analysis only, include safe-delete candidates.`
 
-## 8. Limitations / What Not To Expect
+### 11. Validate assumptions before editing
 
-- Pipelines and commands are **not automatic**; you must invoke them.
-- Hooks run only when using Codex; they are not git hooks.
-- No automatic test execution unless you ask for it.
-- Codex cannot infer missing requirements; you must be explicit.
-- Security review is best-effort and depends on visible changes.
+- Require Codex support verification and explicit uncertainty labels.
 
-## 9. Recommended Usage Flow
+Example:
 
-1. Start with `/plan <request>` for any multi-file change.
-2. Implement using a direct request or `/tdd <scope>`.
-3. Run `pnpm run typecheck`, `pnpm run lint`, and `pnpm run format:check`.
-4. Run a relevant Playwright command for the touched scope.
-5. Run `/review <scope>` for quality and security.
-6. Adjust and finalize.
+- `Before any changes, verify whether this pattern is supported by official OpenAI Codex docs. If unclear, mark not verified and stop.`
+
+## Template Usage (Repo Convention)
+
+Use these file-path templates directly in your prompt:
+
+- `.agents/commands/plan.md <request>`
+  - General planning for new work or broad tasks.
+- `.agents/commands/plan-change.md <request>`
+  - Change planning for existing behavior with current-vs-target delta.
+- `.agents/commands/investigate-flake.md <test>`
+  - Quick flaky triage.
+- `.agents/commands/bug-investigation.md <test or error>`
+  - Deep investigation with root-cause evidence.
+- `.agents/commands/review.md <scope>`
+  - Review explicit file/folder scope.
+- `.agents/commands/review-changes.md`
+  - Review current uncommitted working tree.
+
+## CLI Quickstart (Built-in Commands)
+
+- `/status`
+  - Verify model, sandbox, approval policy, writable roots.
+- `/permissions`
+  - Adjust approval strictness for the current session.
+- `/review`
+  - Ask Codex to review current working tree.
+
+Required validation after code/doc changes:
+
+```bash
+pnpm run typecheck
+pnpm run lint
+pnpm run format:check
+```
+
+## Analysis-Only First Examples
+
+- `Map the current architecture for specs/page objects/fixtures. Analysis only, no edits.`
+- `Find overlap between .agents/commands files and propose consolidation options. No edits.`
+- `Audit .codex/config.toml and .codex/hooks.json for Codex compatibility. Analysis only.`
+- `Compare plan.md and plan-change.md and recommend which to use for this request. No edits.`
+
+## Skills In This Repo
+
+Available skills:
+
+- `api-automation`, `bug-investigation`, `db-validation`, `fixtures`, `manual-testing`, `page-objects`, `refactor-test`, `review-changes`, `selectors-and-locators`, `test-data-strategy`, `typescript-types`, `write-test`.
+
+When to ask explicitly for skills:
+
+- Use explicit skill naming when task intent is ambiguous.
+- Name 1-2 skills max per prompt to avoid noisy context.
+
+Examples:
+
+- `Use write-test and page-objects skills to add a new UI spec.`
+- `Use selectors-and-locators to improve locator stability in this file.`
+
+## Subagents In This Repo
+
+Subagents are configured in `.codex/agents/*.toml` and enabled by project config.
+
+Good use cases:
+
+- Parallel audits across quality, security, and architecture.
+- Multi-part investigations where outputs can be combined.
+
+Not needed:
+
+- Small, single-file edits.
+- Trivial formatting or one-line docs updates.
+
+Prompt pattern:
+
+- `Split into subagents: one for locator quality, one for flaky risk, one for security review. Return a consolidated report.`
+
+## Hooks In This Repo
+
+Hooks are configured in `.codex/hooks.json` and enabled via `features.codex_hooks = true`.
+
+Current guardrails:
+
+- Blocks shell use of `--no-verify`.
+- Blocks destructive shell command patterns (`rm -rf`, `--force`, `--hard`).
+- Logs session lifecycle events to `.codex/session.log`.
+
+Expected workflow impact:
+
+- Disallowed commands are blocked before execution.
+- You may need to rephrase or choose safer alternatives.
+
+## Config That Matters Daily
+
+From `.codex/config.toml`:
+
+- `model = "gpt-5.3-codex"`
+- `sandbox_mode = "workspace-write"`
+- `approval_policy = "on-request"`
+- Profiles:
+  - `development` (workspace-write)
+  - `review` and `conservative` (read-only)
+- MCP servers configured:
+  - GitHub, Context7, sequential-thinking, Playwright
+- Subagent limits:
+  - `max_threads = 4`
+  - `max_depth = 1`
+
+Important note:
+
+- Project config applies when the project is trusted.
+- User-level config can still influence behavior outside project-scoped settings.
+
+## Best Practices For This Repo
+
+- Name exact files and expected outputs.
+- Request analysis-first for risky or broad tasks.
+- Ask for plan-first on multi-file changes.
+- Constrain scope explicitly: `minimal changes`, `no broad refactor`.
+- Reinforce AGENTS boundaries in your prompt.
+- Split large work into smaller sequential prompts.
+
+## Anti-Patterns
+
+- `Fix everything in this repo.`
+- Huge refactor request without file constraints.
+- Mixing review-only and implementation in one prompt.
+- Ignoring AGENTS boundaries for specs/page objects/fixtures.
+- Assuming undocumented Codex behavior is supported.
+
+## Codex Support Verification Rule
+
+Always treat official OpenAI Codex documentation as source of truth.
+
+If behavior is not clearly documented, label it:
+
+- `not verified for Codex`
+
+Then stop before implementing that pattern.
+
+## Repo Executive Summary (Rewritten)
+
+This repo is a Playwright test workspace with Codex configured for guided, scoped work.
+`AGENTS.md` defines coding boundaries and validation requirements.
+`.codex/config.toml`, `.codex/hooks.json`, `.codex/agents/`, and `.agents/skills/` are active and operational.
+`.agents/commands/*.md` are useful prompt templates but remain conventions, not built-in slash commands.
+Use analysis-first prompts, then minimal implementation, then required validation, then review.
+
+## Step-by-Step Guide (Rewritten)
+
+1. Start Codex at repo root and run `/status`.
+2. Run `/permissions` if approval mode needs adjustment.
+3. Ask for scoped analysis first with `no edits`.
+4. If needed, request a plan (`.agents/commands/plan.md ...` or `plan-change.md ...`).
+5. Approve minimal implementation with explicit file boundaries.
+6. Run `pnpm run typecheck`, `pnpm run lint`, `pnpm run format:check`.
+7. Run review (`/review` or `.agents/commands/review.md <scope>`).
+8. If proposing new Codex behavior, require support verification first; if unclear, mark not verified.
