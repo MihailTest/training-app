@@ -4,17 +4,15 @@ import { test } from '@utils/ui-fixtures';
 test.describe('home hub automation', () => {
   test('renders hero, sections, and key cards', { tag: ['@smoke'] }, async ({ homePage }) => {
     await homePage.navigateTo();
-    await expect(await homePage.getHeroTitleCopy(), 'welcome copy should match expectation').toContain('Welcome to');
-    await expect(await homePage.getHeroDescriptionCopy(), 'hero description should match copy').toContain('UI playground');
-    const cardVisibility = await homePage.getFormControlCardVisibility();
-    for (const [name, isVisible] of Object.entries(cardVisibility)) {
-      await expect(isVisible, `${name} card should be visible`).toBe(true);
-    }
+    expect(await homePage.getHeroTitleCopy(), 'welcome copy should match expectation').toContain('Welcome to');
+    expect(await homePage.getHeroDescriptionCopy(), 'hero description should match copy').toContain('UI playground');
+    await homePage.expectFormControlCardsVisible();
     const headerCopy = await homePage.getCategoryHeaderCopy();
-    await expect(headerCopy.browser, 'browser interactions header should exist').toBe('Browser Interactions');
-    await expect(headerCopy.interactive, 'interactive components header should exist').toBe('Interactive Components');
-    await expect(headerCopy.dragDrop, 'drag & drop header should exist').toBe('Drag & Drop');
-    await expect(await homePage.isStudentRegistrationCardVisible(), 'student registration card should be visible').toBe(true);
+    expect(headerCopy.browser, 'browser interactions header should exist').toBe('Browser Interactions');
+    expect(headerCopy.interactive, 'interactive components header should exist').toBe('Interactive Components');
+    expect(headerCopy.dragDrop, 'drag & drop header should exist').toBe('Drag & Drop');
+    expect(await homePage.getUserRegistrationHeaderCopy(), 'user registration header should exist').toBe('User Registration');
+    await homePage.expectStudentRegistrationCardVisible();
   });
 
   test('card navigation routes correctly and back restores home', { tag: ['@regression'] }, async ({ homePage }) => {
@@ -35,16 +33,13 @@ test.describe('home hub automation', () => {
   test('responsive layout remains usable across viewports', { tag: ['@regression'] }, async ({ homePage }) => {
     await homePage.setMobileViewport();
     await homePage.navigateTo();
-    await expect(await homePage.hasNoHorizontalOverflow(), 'page should not have horizontal overflow').toBe(true);
+    expect(await homePage.hasNoHorizontalOverflow(), 'page should not have horizontal overflow').toBe(true);
     await homePage.scrollCardIntoView('link-draggable-elements');
     await homePage.clickCard('link-draggable-elements', '/drag-drop/draggable-elements');
     await homePage.goBackToHome();
 
     await homePage.setDesktopViewport();
-    const cardVisibility = await homePage.getFormControlCardVisibility();
-    for (const [name, isVisible] of Object.entries(cardVisibility)) {
-      await expect(isVisible, `${name} card should be visible`).toBe(true);
-    }
-    await expect(await homePage.getViewportWidth(), 'desktop viewport width should be greater than 1200').toBeGreaterThan(1200);
+    await homePage.expectFormControlCardsVisible();
+    expect(await homePage.getViewportWidth(), 'desktop viewport width should be greater than 1200').toBeGreaterThan(1200);
   });
 });

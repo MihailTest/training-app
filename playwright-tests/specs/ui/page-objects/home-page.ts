@@ -19,8 +19,8 @@ export default class HomePage extends BasePage {
     this.mainContent = page.getByRole('main');
     this.homeContainer = page.getByTestId('page-home-container');
     this.heroSection = page.getByTestId('section-hero');
-    this.welcomeText = page.getByText('Welcome to rotaru.qa-ui-practice-hub');
-    this.heroDescription = page.getByText('UI playground to exercise complex interaction scenarios and edge cases');
+    this.welcomeText = this.heroSection.getByRole('heading', { level: 1 });
+    this.heroDescription = this.heroSection.getByText(/UI playground to exercise/i);
     this.formControlCards = {
       'link-text-input': page.getByRole('link', { name: /text input/i }),
       'link-nested-checkboxes': page.getByRole('link', { name: /nested checkboxes/i }),
@@ -135,12 +135,30 @@ export default class HomePage extends BasePage {
   }
 
   /**
+   * Assert all Form Controls cards are visible.
+   */
+  @step('verify form control cards are visible')
+  async expectFormControlCardsVisible(): Promise<void> {
+    for (const [name, locator] of Object.entries(this.formControlCards)) {
+      await expect(locator, `${name} card should be visible`).toBeVisible();
+    }
+  }
+
+  /**
    * Read top-level category header text.
    */
   @step('read category header copy')
   async getCategoryHeaderCopy(): Promise<Record<'browser' | 'interactive' | 'dragDrop', string>> {
     const [browser, interactive, dragDrop] = await Promise.all([this.categoryHeaders.browser.innerText(), this.categoryHeaders.interactive.innerText(), this.categoryHeaders.dragDrop.innerText()]);
     return { browser, interactive, dragDrop };
+  }
+
+  /**
+   * Read the User Registration section header text.
+   */
+  @step('read user registration header copy')
+  async getUserRegistrationHeaderCopy(): Promise<string> {
+    return await this.page.getByRole('heading', { level: 2, name: /user registration/i }).innerText();
   }
 
   /**
@@ -190,5 +208,13 @@ export default class HomePage extends BasePage {
   @step('check student registration card visibility')
   async isStudentRegistrationCardVisible(): Promise<boolean> {
     return await this.studentRegistrationCard.isVisible();
+  }
+
+  /**
+   * Assert student registration card is visible.
+   */
+  @step('verify student registration card visibility')
+  async expectStudentRegistrationCardVisible(): Promise<void> {
+    await expect(this.studentRegistrationCard, 'student registration card should be visible').toBeVisible();
   }
 }
