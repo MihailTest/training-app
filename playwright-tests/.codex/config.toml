@@ -19,15 +19,6 @@ approval_policy = "on-request"
 sandbox_mode = "read-only"
 approval_policy = "on-request"
 
-[mcp_servers.github]
-enabled = true
-command = "npx"
-args = ["-y", "@modelcontextprotocol/server-github"]
-startup_timeout_sec = 45
-
-[mcp_servers.github.env]
-GITHUB_PERSONAL_ACCESS_TOKEN = "YOUR_GITHUB_PAT_HERE"
-
 [mcp_servers.context7]
 enabled = true
 command = "npx"
@@ -41,7 +32,7 @@ args = ["-y", "@modelcontextprotocol/server-sequential-thinking"]
 startup_timeout_sec = 45
 
 [mcp_servers.playwright]
-enabled = true
+enabled = false
 command = "npx"
 args = ["@playwright/mcp@latest"]
 startup_timeout_sec = 45
