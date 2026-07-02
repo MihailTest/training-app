@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    // "ignoreDeprecations" silences deprecation warnings for specified TypeScript versions.
+    "ignoreDeprecations": "6.0",
     // "module" specifies the module code generation method: commonjs, amd, system, umd, es6, es2015, es2020, esnext.
     "module": "ESNext",
     // "target" sets the JavaScript language version for emitted JavaScript and include compatible library declarations.
@@ -24,9 +26,15 @@
     "explainFiles": false,
     // add path alias for easily importing test id's from outside of ui-tests package
     "paths": {
-      "@ui/*": ["specs/ui/*"],
-      "@utils/*": ["specs/utils/*"],
-      "@config/*": ["specs/config/*"]
+      "@ui/*": [
+        "specs/ui/*"
+      ],
+      "@utils/*": [
+        "specs/utils/*"
+      ],
+      "@config/*": [
+        "specs/config/*"
+      ]
     },
     // "pretty" stylizes errors and messages using color and context (experimental).
     "pretty": true,
@@ -41,16 +49,31 @@
     // "allowImportingTsExtensions" allows importing .ts files with .js extensions for ESM
     "allowImportingTsExtensions": true,
     // "types" includes type definitions for Node and Playwright
-    "types": ["node", "@playwright/test"],
+    "types": [
+      "node",
+      "@playwright/test"
+    ],
     // "experimentalDecorators" enables experimental support for decorators
     "experimentalDecorators": true,
     // "lib" specifies library files to be included in the compilation
-    "lib": ["ES2022", "DOM"]
+    "lib": [
+      "ES2022",
+      "DOM"
+    ]
   },
   "ts-node": {
     "esm": true
   },
-  "include": ["specs/**/*.ts", "playwright.config.ts", "eslint.config.js", "eslint.base.config.js"],
+  "include": [
+    "specs/**/*.ts",
+    "playwright.config.ts",
+    "eslint.config.js",
+    "eslint.base.config.js"
+  ],
   // "exclude" is used to exclude certain files from the compilation process.
-  "exclude": ["node_modules", "playwright-report", ".state"]
+  "exclude": [
+    "node_modules",
+    "playwright-report",
+    ".state"
+  ]
 }
