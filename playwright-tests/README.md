@@ -141,17 +141,7 @@ This workspace is intended to be run from the repo root CI. The workflow file is
 4. Run `pnpm run typecheck` and a targeted test command.
 5. Review for boundary violations and locator quality.
 
-## 10. Codex / Agentic Usage (Brief)
-
-Codex is configured for this workspace, but usage is manual.
-Use instructions.md as the primary operational guide.
-
-Quick entry points:
-
-- Built-in CLI checks: /status, /permissions, /review
-- Repo prompt templates: .agents/commands/plan.md <request>, .agents/commands/tdd.md <scope>, .agents/commands/review.md <scope>
-
-## 11. Maintenance Guidance
+## 10. Maintenance Guidance
 
 - Keep page objects small and focused on a single page or component area.
 - Avoid helper/utility sprawl; prefer page object methods.
