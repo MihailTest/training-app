@@ -18,8 +18,10 @@ test.describe('home hub automation', () => {
   test('card navigation routes correctly and back restores home', { tag: ['@regression'] }, async ({ homePage }) => {
     await homePage.navigateTo();
     await homePage.clickCard('link-text-input', '/form-controls/text-input');
+    expect(await homePage.getPageTitle(), 'text input card should land on the text input practice page').toBe('rotaru.qa-ui-practice-hub | Movie Review Submission');
     await homePage.goBackToHome();
     await homePage.clickCard('link-window-management', '/browser-interactions/window-management');
+    expect(await homePage.getPageTitle(), 'window management card should land on the window management practice page').toBe('Multi-Window Chat Application - UI Practice Hub');
     await homePage.goBackToHome();
   });
 
@@ -41,5 +43,12 @@ test.describe('home hub automation', () => {
     await homePage.setDesktopViewport();
     await homePage.expectFormControlCardsVisible();
     expect(await homePage.getViewportWidth(), 'desktop viewport width should be greater than 1200').toBeGreaterThan(1200);
+  });
+
+  test('draggable elements card opens the intended practice page instead of a not-found route', { tag: ['@regression'] }, async ({ homePage }) => {
+    await homePage.navigateTo();
+    await homePage.scrollCardIntoView('link-draggable-elements');
+    await homePage.clickCard('link-draggable-elements', '/drag-drop/draggable-elements');
+    expect(await homePage.getPageTitle(), 'draggable elements card should not resolve to the 404 page').not.toBe('404 - Page Not Found');
   });
 });

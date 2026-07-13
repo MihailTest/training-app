@@ -43,6 +43,15 @@ export default class LoginPage extends BasePage {
   }
 
   /**
+   * Navigate to login route without waiting for the login form.
+   * Useful for redirect checks when the current session may already be authenticated.
+   */
+  @step('navigate to login route without form readiness check')
+  async navigateToRoute(): Promise<void> {
+    await super.navigateTo('auth/login');
+  }
+
+  /**
    * Verify login page has loaded
    */
   @step('verify login page loaded')

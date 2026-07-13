@@ -11,12 +11,14 @@ test.describe('login', () => {
     await loginPage.navigateTo();
     await loginPage.loginWithCredentials(ADMIN_USER);
     expect(await loginPage.getCurrentUrl(), 'Page URL should match /').toMatch(/\/$/);
+    expect(await loginPage.isLoggedIn(), 'Authenticated header controls should be visible after admin login').toBe(true);
   });
 
   test('verify qa user can log in with valid credentials and reach the authenticated area', { tag: ['@regression'] }, async ({ loginPage }) => {
     await loginPage.navigateTo();
     await loginPage.loginWithCredentials(QA_USER);
     expect(await loginPage.getCurrentUrl(), 'Page URL should match /').toMatch(/\/$/);
+    expect(await loginPage.isLoggedIn(), 'Authenticated header controls should be visible after QA login').toBe(true);
   });
 
   test('verify login fails when password is incorrect for a valid username.', { tag: ['@smoke'] }, async ({ loginPage }) => {
@@ -43,5 +45,14 @@ test.describe('login', () => {
     await loginPage.login(usernameWithSpaces, passwordWithSpaces);
     expect(await loginPage.getCurrentUrl(), 'Page URL should match /auth/login').toMatch(/\/auth\/login$/);
     expect(await loginPage.isInvalidCredentialsMessageVisible(), 'Invalid credentials message should appear').toBe(true);
+  });
+
+  test.describe('authenticated session behavior', () => {
+    test('verify authenticated users are redirected away from the login page', { tag: ['@regression'] }, async ({ loginPage }) => {
+      await loginPage.navigateToRoute();
+      await loginPage.waitForPostLogin();
+      expect(await loginPage.getCurrentUrl(), 'Authenticated users should be redirected to the home route').toMatch(/\/$/);
+      expect(await loginPage.isLoggedIn(), 'Authenticated header controls should remain visible after redirect').toBe(true);
+    });
   });
 });

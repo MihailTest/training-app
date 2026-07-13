@@ -39,4 +39,11 @@ export abstract class BasePage {
   async getCurrentUrl(): Promise<string> {
     return this.page.url();
   }
+
+  /**
+   * Read the current document title.
+   */
+  async getPageTitle(): Promise<string> {
+    return this.page.title();
+  }
 }
