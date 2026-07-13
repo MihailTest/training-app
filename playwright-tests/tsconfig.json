@@ -1,7 +1,5 @@
 {
   "compilerOptions": {
-    // "ignoreDeprecations" silences deprecation warnings for specified TypeScript versions.
-    "ignoreDeprecations": "6.0",
     // "module" specifies the module code generation method: commonjs, amd, system, umd, es6, es2015, es2020, esnext.
     "module": "ESNext",
     // "target" sets the JavaScript language version for emitted JavaScript and include compatible library declarations.
@@ -18,8 +16,6 @@
     "noFallthroughCasesInSwitch": true,
     // "noUnusedLocals" reports errors on unused locals.
     "noUnusedLocals": true,
-    // "baseUrl" is used to specify the base directory to resolve non-relative module names.
-    "baseUrl": ".",
     // "resolveJsonModule" allows importing .json files.
     "resolveJsonModule": true,
     // "explainFiles" logs out files read during the compilation.
@@ -27,13 +23,13 @@
     // add path alias for easily importing test id's from outside of ui-tests package
     "paths": {
       "@ui/*": [
-        "specs/ui/*"
+        "./specs/ui/*"
       ],
       "@utils/*": [
-        "specs/utils/*"
+        "./specs/utils/*"
       ],
       "@config/*": [
-        "specs/config/*"
+        "./specs/config/*"
       ]
     },
     // "pretty" stylizes errors and messages using color and context (experimental).
