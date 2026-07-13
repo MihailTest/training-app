@@ -1,7 +1,7 @@
 import path from 'node:path';
 
 import { expect } from '@playwright/test';
-import { SHORT_REVIEW_FORM_DATA, TABLE_SEARCH_TERMS, VALID_REVIEW_FORM_DATA } from '@ui/test-data/form-controls/form-controls-data.ts';
+import { EMPLOYEE_DIALOG_FIELD_LABELS, FIRST_EMPLOYEE_FORM_DATA, SHORT_REVIEW_FORM_DATA, TABLE_SEARCH_TERMS, VALID_REVIEW_FORM_DATA } from '@ui/test-data/form-controls/form-controls-data.ts';
 import { test } from '@utils/ui-fixtures';
 
 const invalidMediaPath = path.resolve('specs/ui/test-data/form-controls/invalid-format.txt');
@@ -27,6 +27,29 @@ test.describe('form controls', () => {
 
       const shortReviewPanel = await formControlsPage.submitShortReview(SHORT_REVIEW_FORM_DATA);
       expect(shortReviewPanel, 'short review should keep empty-state summary').toContain('No review submitted yet');
+    });
+
+    test('reset restores the default review summary after entering draft details', { tag: ['@regression'] }, async ({ formControlsPage }) => {
+      await formControlsPage.navigateToRoute('text-input');
+
+      await formControlsPage.fillReviewDraft(VALID_REVIEW_FORM_DATA);
+      await formControlsPage.resetState();
+
+      const resetPanel = await formControlsPage.getResultPanelText();
+      expect(resetPanel, 'reset should restore the default empty review summary').toContain('No review submitted yet');
+    });
+
+    test('empty submit preserves the default review summary state', { tag: ['@regression'] }, async ({ formControlsPage }) => {
+      await formControlsPage.navigateToRoute('text-input');
+
+      await formControlsPage.submitShortReview({
+        movieTitle: '',
+        reviewerEmail: '',
+        reviewText: '',
+      });
+
+      const emptySubmitPanel = await formControlsPage.getResultPanelText();
+      expect(emptySubmitPanel, 'empty submit should keep the default empty review summary').toContain('No review submitted yet');
     });
   });
 
@@ -54,7 +77,17 @@ test.describe('form controls', () => {
 
       const selectedSummary = await formControlsPage.selectProfessionalPlan();
       expect(selectedSummary, 'selected summary should include Professional plan').toContain('Professional Plan');
-      expect(selectedSummary, 'selected summary should include monthly price').toContain('');
+      expect(selectedSummary, 'selected summary should include monthly price').toContain('$79/mo');
+      expect(selectedSummary, 'selected summary should include core feature details').toContain('25 Projects');
+    });
+
+    test('happy: selecting enterprise plan updates summary with enterprise details', { tag: ['@regression'] }, async ({ formControlsPage }) => {
+      await formControlsPage.navigateToRoute('radio-selection');
+
+      const selectedSummary = await formControlsPage.selectEnterprisePlan();
+      expect(selectedSummary, 'selected summary should include Enterprise plan').toContain('Enterprise Plan');
+      expect(selectedSummary, 'selected summary should include enterprise monthly price').toContain('$299/mo');
+      expect(selectedSummary, 'selected summary should include enterprise feature details').toContain('Unlimited Projects');
     });
 
     test('negative: no selection keeps default summary state', { tag: ['@regression'] }, async ({ formControlsPage }) => {
@@ -92,6 +125,37 @@ test.describe('form controls', () => {
       const clearedRows = await formControlsPage.searchEmployeeTable(TABLE_SEARCH_TERMS.clear);
       expect(clearedRows, 'rows should return after clearing search').toBeGreaterThan(0);
     });
+
+    test('search resets or remains effective after moving to the second table page', { tag: ['@regression'] }, async ({ formControlsPage }) => {
+      await formControlsPage.navigateToRoute('data-table');
+
+      await formControlsPage.goToNextEmployeeTablePage();
+      const matchedRows = await formControlsPage.searchEmployeeTable(TABLE_SEARCH_TERMS.match);
+      expect(matchedRows, 'search by existing keyword should still return rows after paging').toBeGreaterThan(0);
+
+      const paginationSummary = await formControlsPage.getEmployeeTablePaginationSummary();
+      expect(paginationSummary, 'pagination summary should reflect a non-empty filtered result').not.toContain('Showing 0 of');
+    });
+
+    test('add employee dialog exposes the expected editable fields', { tag: ['@regression'] }, async ({ formControlsPage }) => {
+      await formControlsPage.navigateToRoute('data-table');
+
+      const dialogTitle = await formControlsPage.openAddEmployeeDialog();
+      expect(dialogTitle, 'add employee action should open the create dialog').toBe('Add New Employee');
+
+      const fieldLabels = await formControlsPage.getEmployeeDialogFieldLabels();
+      expect(fieldLabels, 'employee dialog should expose the expected editable fields').toEqual(EMPLOYEE_DIALOG_FIELD_LABELS);
+    });
+
+    test('edit employee dialog is prefilled with the selected employee values', { tag: ['@regression'] }, async ({ formControlsPage }) => {
+      await formControlsPage.navigateToRoute('data-table');
+
+      const dialogTitle = await formControlsPage.openFirstEmployeeEditDialog();
+      expect(dialogTitle, 'edit action should open the employee edit dialog').toBe('Edit Employee');
+
+      const dialogValues = await formControlsPage.getEmployeeDialogValues();
+      expect(dialogValues, 'edit dialog should preload the selected employee values').toEqual(FIRST_EMPLOYEE_FORM_DATA);
+    });
   });
 
   test.describe('button interactions', () => {
@@ -111,6 +175,23 @@ test.describe('form controls', () => {
       const singleClickLog = await formControlsPage.singleClickDoubleAction();
       expect(singleClickLog, 'single click should not trigger double-click action').toContain('No actions performed yet');
     });
+
+    test('happy: right click delete and archive actions append expected task events', { tag: ['@regression'] }, async ({ formControlsPage }) => {
+      await formControlsPage.navigateToRoute('button-interactions');
+
+      const deleteLog = await formControlsPage.rightClickDeleteTaskAction();
+      expect(deleteLog, 'right click should create a delete task log entry').toContain('Task Deleted');
+
+      const archiveLog = await formControlsPage.clickArchiveTaskAction();
+      expect(archiveLog, 'archive action should append an archive task log entry').toContain('Task Archived');
+    });
+
+    test('happy: complete task action appends a completed task log entry', { tag: ['@regression'] }, async ({ formControlsPage }) => {
+      await formControlsPage.navigateToRoute('button-interactions');
+
+      const completedLog = await formControlsPage.clickCompleteTaskAction();
+      expect(completedLog, 'complete action should append a completed task log entry').toContain('Task Completed');
+    });
   });
 
   test.describe('link navigation', () => {
@@ -121,19 +202,33 @@ test.describe('form controls', () => {
       expect(homeUrl, 'home link should route to root').toMatch(/\/$/);
     });
 
+    test('happy: external docs link opens a new page and records access history', { tag: ['@regression'] }, async ({ formControlsPage }) => {
+      await formControlsPage.navigateToRoute('link-navigation');
+
+      const externalDocsResult = await formControlsPage.followExternalDocsLink();
+      expect(externalDocsResult.openedNewPage, 'external docs link should open a new page').toBe(true);
+      expect(externalDocsResult.accessHistory, 'external docs link should append access history').toContain('Accessed Community Forum (External)');
+    });
+
     test('negative: broken link routes to not-found and back recovers', { tag: ['@regression'] }, async ({ formControlsPage }) => {
       await formControlsPage.navigateToRoute('link-navigation');
 
       const brokenUrl = await formControlsPage.followBrokenLink();
       expect(brokenUrl, 'broken link should route to not-found page').toMatch(/\/not-found$/);
 
-      await formControlsPage.page.goBack({ waitUntil: 'load' });
-      const recoveredUrl = await formControlsPage.getCurrentUrl();
+      const recoveredUrl = await formControlsPage.returnFromBrokenLink();
       expect(recoveredUrl, 'browser back should recover to link-navigation route').toMatch(/\/form-controls\/link-navigation$/);
     });
   });
 
   test.describe('media validation', () => {
+    test('negative: baseline state shows no files validated yet', { tag: ['@regression'] }, async ({ formControlsPage }) => {
+      await formControlsPage.navigateToRoute('media-validation');
+
+      const initialState = await formControlsPage.getMainContentText();
+      expect(initialState, 'media validation should start with an empty validation state').toContain('No files validated yet');
+    });
+
     test('happy: accepts supported media extension', { tag: ['@regression'] }, async ({ formControlsPage }) => {
       await formControlsPage.navigateToRoute('media-validation');
 
@@ -170,9 +265,24 @@ test.describe('form controls', () => {
       const initialState = await formControlsPage.getResultPanelText();
       expect(initialState, 'result panel should start with empty upload state').toContain('No documents uploaded');
     });
+
+    test('happy: pdf template download action starts a file download', { tag: ['@regression'] }, async ({ formControlsPage }) => {
+      await formControlsPage.navigateToRoute('file-operations');
+
+      const suggestedFilename = await formControlsPage.downloadSampleTemplate();
+      expect(suggestedFilename, 'pdf template action should start a download with a pdf filename').toMatch(/\.pdf$/i);
+    });
   });
 
   test.describe('dynamic elements', () => {
+    test('happy: enabling advanced options updates the preview and json state', { tag: ['@regression'] }, async ({ formControlsPage }) => {
+      await formControlsPage.navigateToRoute('dynamic-elements');
+
+      const toggledState = await formControlsPage.toggleAdvancedOptions();
+      expect(toggledState, 'advanced mode should expose additional preview fields').toContain('ADVANCED OPTIONS');
+      expect(toggledState, 'advanced mode should update json state to true').toContain('"advancedMode": true');
+    });
+
     test('happy: add custom field updates preview and json state', { tag: ['@regression'] }, async ({ formControlsPage }) => {
       await formControlsPage.navigateToRoute('dynamic-elements');
 

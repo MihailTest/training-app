@@ -31,3 +31,15 @@ export interface ReviewFormData {
   readonly rating?: string;
   readonly releaseYear?: string;
 }
+
+/**
+ * Editable employee dialog values used by the Form Controls data-table scenarios.
+ */
+export interface EmployeeFormData {
+  readonly firstName: string;
+  readonly lastName: string;
+  readonly department: string;
+  readonly position: string;
+  readonly salary: string;
+  readonly status: 'Active' | 'Inactive' | 'On Leave';
+}
