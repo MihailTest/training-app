@@ -4,16 +4,6 @@
 
 This workspace demonstrates maintainable Playwright automation, including page objects, fixtures, typed test data, multi-role storage state, boxed report steps, and executable known-defect coverage.
 
-`AGENTS.md` is the repository source of truth. Read it before changing tests or infrastructure.
-
-## Codex Guidance
-
-Codex skills are installed globally under `$CODEX_HOME/skills` and discovered by the active runtime. Relevant global skills include `playwright-review`, `playwright-test-writer`, `page-objects`, `selectors-and-locators`, `fixtures`, `test-data-strategy`, and `typescript-types`.
-
-Global skills are the source of truth. Do not duplicate them under `.agents/skills`, because local copies can drift from the installed versions and create unclear precedence.
-
-`.codex/` is currently reserved for future project-local runtime configuration; do not document hooks or agents as active until those files exist.
-
 ## Recommended Workflow
 
 1. Inspect the target flow, nearby specs, page objects, fixtures, and test data.

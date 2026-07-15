@@ -1,47 +1,41 @@
-import { test as setup } from '@playwright/test';
+import { mkdir } from 'node:fs/promises';
+import { dirname } from 'node:path';
+
+import type { Page } from '@playwright/test';
+import { expect, test as setup } from '@playwright/test';
 import LoginPage from '@ui/page-objects/login-page.ts';
+import type { UICredentials } from '@ui/test-data/ui-credentials.ts';
 import { ADMIN_USER, QA_USER } from '@ui/test-data/ui-credentials.ts';
 import { ADMIN_STORAGE_STATE_PATH, QA_STORAGE_STATE_PATH } from '@utils/constants.ts';
 
 /**
- * Global setup for UI tests
- * Creates necessary directories and storage state files for all user roles
- * Tagged with @SetupUI for selective test execution
+ * Authenticate one reusable account per role and persist separate browser states.
+ *
+ * This showcase does not mutate shared server-side account data, so reusing one
+ * state per role is deterministic. A stateful production suite should provision
+ * a unique account/state per parallel worker instead.
  */
+async function authenticateAndSaveState(page: Page, credentials: UICredentials, storageStatePath: string): Promise<void> {
+  const loginPage = new LoginPage(page);
+
+  await loginPage.navigateTo();
+  await loginPage.loginWithCredentials(credentials);
+  await expect(loginPage.logoutButton, `${credentials.role} user should be authenticated before saving state`).toBeVisible();
+
+  await mkdir(dirname(storageStatePath), { recursive: true });
+  await page.context().storageState({ path: storageStatePath });
+}
 
 /**
- * Authentication setup for admin user (full access)
- * Tagged with @SetupUI for selective execution
+ * Create the full-access admin browser state.
  */
-setup('authenticate as admin user', { tag: ['@SetupUI'] }, async ({ page }, testInfo) => {
-  // TestInfo is passed to page objects to enable future per-test attachments/logging.
-  const loginPage = new LoginPage(page, testInfo);
-  await loginPage.navigateTo();
-  await loginPage.loginWithCredentials(ADMIN_USER);
-
-  const isLoggedIn = await loginPage.isLoggedIn();
-  if (!isLoggedIn) {
-    throw new Error('admin user authentication failed');
-  }
-
-  await loginPage.saveStorageState(ADMIN_STORAGE_STATE_PATH);
+setup('authenticate as admin user', { tag: ['@SetupUI'] }, async ({ page }) => {
+  await authenticateAndSaveState(page, ADMIN_USER, ADMIN_STORAGE_STATE_PATH);
 });
 
 /**
- * Authentication setup for QA user (limited access)
- * Tagged with @SetupUI for selective execution
+ * Create the limited-access QA browser state.
  */
-setup('authenticate as QA user', { tag: ['@SetupUI'] }, async ({ page }, testInfo) => {
-  // TestInfo is passed to page objects to enable future per-test attachments/logging.
-  const loginPage = new LoginPage(page, testInfo);
-
-  await loginPage.navigateTo();
-  await loginPage.loginWithCredentials(QA_USER);
-
-  const isLoggedIn = await loginPage.isLoggedIn();
-  if (!isLoggedIn) {
-    throw new Error('QA user authentication failed');
-  }
-
-  await loginPage.saveStorageState(QA_STORAGE_STATE_PATH);
+setup('authenticate as QA user', { tag: ['@SetupUI'] }, async ({ page }) => {
+  await authenticateAndSaveState(page, QA_USER, QA_STORAGE_STATE_PATH);
 });

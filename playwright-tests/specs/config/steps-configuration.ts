@@ -1,5 +1,7 @@
 import { test } from '@playwright/test';
 
+type AsyncMethod<This, Args extends unknown[], Result> = (this: This, ...args: Args) => Promise<Result>;
+
 function formatMessage(message: string, args: unknown[]): string {
   return message.replace(/\{(\d+)\}/g, (_, index) => String(args[Number(index)]));
 }
@@ -24,15 +26,16 @@ function formatMessage(message: string, args: unknown[]): string {
     }
  ```
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function step(message?: string): any {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return function actualDecorator(target: any, context: any): any {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return function replacementMethod(this: any, ...args: any[]) {
-      const name = message ? formatMessage(message, args) : `${this.constructor.name}.${context.name as string}`;
+export function step(message?: string) {
+  return function <This, Args extends unknown[], Result>(
+    target: AsyncMethod<This, Args, Result>,
+    context: ClassMethodDecoratorContext<This, AsyncMethod<This, Args, Result>>
+  ): AsyncMethod<This, Args, Result> {
+    return async function replacementMethod(this: This, ...args: Args): Promise<Result> {
+      const methodName = String(context.name);
+      const stepName = message ? formatMessage(message, args) : methodName;
 
-      return test.step(name, async () => target.call(this, ...args), {
+      return test.step(stepName, () => target.call(this, ...args), {
         box: true,
       });
     };

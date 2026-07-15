@@ -1,21 +1,11 @@
-import type { Page, TestInfo } from '@playwright/test';
-import Helpers from '@ui/page-objects/globals/helpers';
+import type { Page } from '@playwright/test';
 
 /**
  * Base Page class providing common functionality for all page objects
- * Follows the Page Object Model pattern with helper composition
+ * Keeps shared navigation and page metadata behavior in one place.
  */
 export abstract class BasePage {
-  readonly helpers: Helpers;
-
-  constructor(
-    public page: Page,
-    // TestInfo gives per-test metadata for logging, attachments, and artifact naming.
-    // Keep this available so future helpers can write per-test artifacts (screenshots, logs, traces).
-    public testInfo: TestInfo
-  ) {
-    this.helpers = new Helpers(page, testInfo);
-  }
+  constructor(public readonly page: Page) {}
 
   /**
    * Abstract method that must be implemented by all page objects

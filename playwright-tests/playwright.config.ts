@@ -1,7 +1,7 @@
 import 'dotenv/config';
 
 import { defineConfig, devices } from '@playwright/test';
-import { ADMIN_STORAGE_STATE_PATH } from '@utils/constants.ts';
+import { ADMIN_STORAGE_STATE_PATH, QA_STORAGE_STATE_PATH } from '@utils/constants.ts';
 
 const isCI = process.env.CI === 'true';
 const shard = process.env.SHARD_LABEL ?? 'local';
@@ -46,12 +46,12 @@ export default defineConfig({
   /* Fail the build on CI if you accidentally left test.only in the source code */
   forbidOnly: !!process.env.CI,
 
-  /* Limit the number of failures on CI to save resources */
-  maxFailures: 50,
+  /* Stop a broken CI run early while preserving enough failures for diagnosis. */
+  maxFailures: isCI ? 10 : undefined,
 
   use: {
-    /* Run in headless mode in CI, headed locally */
-    headless: isCI,
+    /* Headless is the deterministic default; use --headed or --debug when needed. */
+    headless: true,
 
     /* Base URL for page.goto and navigation helpers */
     baseURL: process.env.BASE_URL || 'http://localhost:3000',
@@ -93,21 +93,21 @@ export default defineConfig({
         ignoreHTTPSErrors: true,
         storageState: ADMIN_STORAGE_STATE_PATH,
       },
-      // dependencies: ['setup'],
+      dependencies: ['setup'],
     },
 
-    // qa project
-    // first import QA_STORAGE_STATE_PATH
-    // {
-    //   name: 'qa chromium',
-    //   testDir: `./specs/ui/tests/`,
-    //   testMatch: /.*\.spec\.ts/,
-    //   use: {
-    //     ...devices['Desktop Chrome'],
-    //     ignoreHTTPSErrors: true,
-    //     storageState: QA_STORAGE_STATE_PATH,
-    //   },
-    //   // dependencies: ['setup'],
-    // },
+    // The second project demonstrates the same suite bootstrapped with a
+    // different role-specific state. Role-specific specs can target this project.
+    {
+      name: 'qa chromium',
+      testDir: `./specs/ui/tests/`,
+      testMatch: /.*\.spec\.ts/,
+      use: {
+        ...devices['Desktop Chrome'],
+        ignoreHTTPSErrors: true,
+        storageState: QA_STORAGE_STATE_PATH,
+      },
+      dependencies: ['setup'],
+    },
   ],
 });
