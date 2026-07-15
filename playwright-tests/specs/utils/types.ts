@@ -22,6 +22,28 @@ export type FormControlsRoute =
   | 'dynamic-elements';
 
 /**
+ * Supported course options on the student registration page.
+ */
+export type StudentRegistrationCourse = 'Web Development' | 'Data Science' | 'Mobile Development' | 'Cloud Computing' | 'AI/ML';
+
+/**
+ * Supported experience levels on the student registration page.
+ */
+export type StudentRegistrationExperienceLevel = 'Beginner' | 'Intermediate' | 'Advanced';
+
+/**
+ * Student registration payload used by the enrollment flow.
+ */
+export interface StudentRegistrationFormData {
+  readonly firstName: string;
+  readonly lastName: string;
+  readonly email: string;
+  readonly mobile: string;
+  readonly course: StudentRegistrationCourse;
+  readonly experience: StudentRegistrationExperienceLevel;
+}
+
+/**
  * Payload for Form Controls review submission.
  */
 export interface ReviewFormData {

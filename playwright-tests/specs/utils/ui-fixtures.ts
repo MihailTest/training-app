@@ -1,8 +1,8 @@
-import type { Page, TestInfo } from '@playwright/test';
 import { test as baseTest } from '@playwright/test';
 import FormControlsPage from '@ui/page-objects/form-controls-page.ts';
 import HomePage from '@ui/page-objects/home-page.ts';
 import LoginPage from '@ui/page-objects/login-page.ts';
+import StudentRegistrationPage from '@ui/page-objects/student-registration-page.ts';
 
 /**
  * Extended fixtures interface for UI testing
@@ -12,6 +12,7 @@ interface TrainingFixtures {
   loginPage: LoginPage;
   homePage: HomePage;
   formControlsPage: FormControlsPage;
+  studentRegistrationPage: StudentRegistrationPage;
 }
 /**
  * Extended test with page object fixtures
@@ -27,14 +28,16 @@ interface TrainingFixtures {
  * ```
  */
 export const test = baseTest.extend<TrainingFixtures>({
-  // Pass TestInfo through so page objects can attach per-test artifacts in the future.
-  loginPage: async ({ page }: { page: Page }, use, testInfo: TestInfo) => {
-    await use(new LoginPage(page, testInfo));
+  loginPage: async ({ page }, use) => {
+    await use(new LoginPage(page));
   },
-  homePage: async ({ page }: { page: Page }, use, testInfo: TestInfo) => {
-    await use(new HomePage(page, testInfo));
+  homePage: async ({ page }, use) => {
+    await use(new HomePage(page));
   },
-  formControlsPage: async ({ page }: { page: Page }, use, testInfo: TestInfo) => {
-    await use(new FormControlsPage(page, testInfo));
+  formControlsPage: async ({ page }, use) => {
+    await use(new FormControlsPage(page));
+  },
+  studentRegistrationPage: async ({ page }, use) => {
+    await use(new StudentRegistrationPage(page));
   },
 });
