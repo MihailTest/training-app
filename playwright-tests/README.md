@@ -10,6 +10,7 @@ Core principles:
 - Page objects expose reusable UI actions/reads.
 - Assertions stay in specs by default.
 - Locators are semantic and live in page objects.
+- Confirmed application defects remain executable as expected failures instead of being skipped.
 
 ## 2. Tech Stack
 
@@ -60,7 +61,7 @@ ADMIN_PASSWORD="Admin#123"
 
 ## 5. Running Tests
 
-Create auth storage state (recommended before running UI tests):
+Refresh both role-specific auth states directly when needed:
 
 ```bash
 pnpm run test:setup
@@ -71,6 +72,14 @@ Run admin UI tests:
 ```bash
 pnpm run admin-user-tests
 ```
+
+Run the same suite with QA storage state:
+
+```bash
+pnpm run qa-user-tests
+```
+
+Both browser projects depend on the setup project, so a normal project run creates missing or refreshed storage state automatically.
 
 Run smoke or regression:
 
@@ -91,13 +100,6 @@ Headed/debug runs (Playwright built-in):
 pnpm exec playwright test specs/ui/tests/login.spec.ts --project=chromium --headed
 ```
 
-QA tests:
-The QA project is commented out in `playwright.config.ts`. Uncomment it and then run:
-
-```bash
-pnpm run qa-user-tests
-```
-
 ## 6. How Tests Should Be Written Here
 
 Follow these repo conventions (based on current code and `AGENTS.md`):
@@ -105,12 +107,30 @@ Follow these repo conventions (based on current code and `AGENTS.md`):
 - **Specs own the flow and assertions.**
 - **Page objects own locators** and reusable UI actions/reads.
 - **Assertions** stay in specs by default.
-- **Locator order**: `getByRole` -> `getByLabel` -> `getByPlaceholder` -> `getByTestId` -> `getByText` -> `locator`.
+- Prefer user-facing locators and explicit contracts. Choose role, label, or test id based on semantics and stability rather than a rigid ranking.
+- Assertion-facing locators may be exposed as public `readonly Locator` fields so specs retain Playwright auto-retry behavior.
 - **Avoid** XPath, `force: true`, and `waitForTimeout`.
 - Use fixtures from `@utils/ui-fixtures` (`specs/utils/ui-fixtures.ts`).
 - Call `toBeLoaded()` before deep interactions.
 - Prefer locator-based expects with messages:
   `await expect(locator, 'main container should be visible').toBeVisible();`
+
+### Known Defects As Executable Evidence
+
+This repository is a technical showcase. It intentionally keeps several confirmed application defects under automation to demonstrate that the suite detects real behavior regressions:
+
+- the Home hero has an empty level-one heading;
+- the Draggable Elements card points to an unregistered route;
+- employee search does not reset a stale pagination index;
+- the PDF template action shows a toast but does not start a browser download.
+
+These scenarios use `@known-defect` and `test.fail(true, reason)`. Playwright reports them as expected failures, so the default suite stays green. If the application is fixed, the unexpected pass fails the run and tells the contributor to remove the annotation. They must not be converted to `test.skip`.
+
+### Authentication Design
+
+The setup project creates separate ignored storage-state files for admin and QA users. The admin and QA Chromium projects consume the matching file through project dependencies. This demonstrates multi-role state reuse without logging in before every test.
+
+The showcase tests do not mutate shared server-side account data, so one reusable state per role is safe. In a production suite where parallel tests change shared account state, use one provisioned account and storage state per worker.
 
 ## 7. Debugging & Troubleshooting
 
@@ -118,6 +138,7 @@ Common issues:
 
 - **App not running**: ensure the app is running and `BASE_URL` matches.
 - **Stale sessions**: delete `.state/` and re-run `pnpm run test:setup`.
+- **Expected failures**: inspect the `@known-defect` annotation in the HTML report; an expected failure is documented product evidence, not a flaky retry target.
 - **Flaky tests**: inspect trace and artifacts in `artifacts/` and look for timing/state/locator issues.
 
 Useful locations:
@@ -130,7 +151,7 @@ Useful locations:
 
 This workspace is intended to be run from the repo root CI. The workflow file is **not** inside `playwright-tests/`. If present in your full repo, look under `.github/workflows/` (e.g., a scheduled UI workflow). Align local runs with CI by:
 
-- Running `pnpm run test:setup` before UI tests.
+- Keeping setup-project dependencies enabled for every project that consumes storage state.
 - Using the same Playwright version as in `package.json`.
 
 ## 9. Day-to-Day Contribution Flow
@@ -138,8 +159,9 @@ This workspace is intended to be run from the repo root CI. The workflow file is
 1. Understand the change and scope.
 2. Update or add tests in `specs/ui/tests/`.
 3. Add or adjust page object methods in `specs/ui/page-objects/`.
-4. Run `pnpm run typecheck` and a targeted test command.
-5. Review for boundary violations and locator quality.
+4. Run `pnpm run check` and a targeted test command.
+5. Confirm `@known-defect` scenarios still fail for the documented product reason.
+6. Review for boundary violations, locator quality, and report readability.
 
 ## 10. Maintenance Guidance
 

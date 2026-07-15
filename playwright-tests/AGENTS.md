@@ -23,19 +23,22 @@ Uses pnpm, fixtures, and page objects for stable user-journey tests.
 
 ### 3. Locator Strategy
 
-Preferred order: `getByRole` -> `getByLabel` -> `getByPlaceholder` -> `getByTestId` -> `getByText` -> `locator`.
-Avoid: XPath, brittle text-only selectors, and `force: true`.
+Prefer user-facing locators and explicit UI contracts. Choose `getByRole`, `getByLabel`, or `getByTestId` based on the element's semantics and stability instead of applying a rigid global ranking. Use `getByPlaceholder` or `getByText` when they are the clearest stable contract, and use `locator` only when no stronger contract exists.
 
-- In page objects, declare locators/selectors (including button locators) as private readonly fields at the top and initialize them in the constructor.
+Avoid: XPath, styling-only selectors, deep DOM chains, broad text matches, and `force: true`.
+
+- Keep implementation locators as `private readonly` fields at the top of page objects and initialize them in the constructor.
+- Assertion surfaces may be intentionally exposed as public `readonly Locator` fields or getters so specs can use Playwright web-first assertions.
 - Exception: dynamic/parameterized locators may be created in dedicated helper methods when constructor field declaration is not practical.
 - For page-object creation/refactor, run discovery first on the target route(s): roles/labels/accessible names, form structure, and button actions.
 - Do not guess locator names; keep only selectors validated from the actual page.
 
 ### 4. Assertions
 
-- Assertions stay in specs by default.
+- Business assertions stay in specs.
 - Page objects may include reusable UI-specific checks (e.g., `toBeLoaded()`).
-- Prefer locator-based assertions with messages, e.g. `await expect(locator, 'main container should be visible').toBeVisible();`.
+- Prefer locator-based, web-first assertions with messages, e.g. `await expect(locator, 'main container should be visible').toBeVisible();`.
+- Avoid manual DOM assertions such as `expect(await locator.isVisible()).toBe(true)` when a retrying locator assertion exists.
 
 ### 5. Anti-patterns
 
@@ -46,50 +49,23 @@ Avoid: XPath, brittle text-only selectors, and `force: true`.
 
 ### 6. Type & Documentation Rules
 
-- Public page-object methods must include JSDoc.
-- Shared reusable types must live in `specs/utils/types.ts`.
+- Add JSDoc to public page-object methods only when the contract, side effect, parameter meaning, or synchronization behavior is not obvious from the name and types.
+- Put reusable types in the closest domain-specific type module. Keep `specs/utils/types.ts` for types shared across domains.
 - Do not declare reusable domain/page types inside spec files or page-object files.
 - Prefer reusable test data from specs/ui/test-data over hardcoded test values in specs/page objects.
 - Keep only truly scenario-specific literals inline when extracting to test data adds no practical value.
 
 ### 7. Text Convention Rules
 
-- For locator text matching, default to case-insensitive patterns (for example `/create ticket/i`) unless exact copy-sensitive matching is explicitly required.
+- Prefer exact accessible names when the UI contract is stable. Use case-insensitive patterns only when case or surrounding copy is intentionally flexible.
 
-### 8. Universal POM Prompt Template
+### 8. Showcase Defect Rules
 
-Use this template when asking Codex/skills/subagents to create or refactor a page object:
-
-`Create or refactor a page object for [Page Name].`
-`First, navigate to [URL] and discover:`
-`1) element roles, labels, and accessible names`
-`2) form field structure`
-`3) button names and actions`
-`Then generate/update the page object following repo rules:`
-`- locator priority order`
-`- constructor-declared private readonly locators`
-`- one-page/object boundaries`
-`- reusable UI actions/reads only (no full business flows)`
-`- JSDoc on public methods`
-`- reusable types in specs/utils/types.ts`
-`- reusable test data in specs/ui/test-data`
-`- no waits/force/XPath anti-patterns`
-
-### 9. Universal Test Prompt Template
-
-Use this template when asking Codex/skills/subagents to create or refactor tests:
-
-`Template: Create Test File`
-`Create tests for [FEATURE]`
-`Location: [spec repo location]`
-`Import from: [fixtures/page objects/test data modules]`
-`Tags: @[smoke|regression] + @[functional|e2e|api] (second tag reserved for future)`
-`Structure: test.describe + beforeEach`
-`Scenarios:`
-`- [Happy path]`
-`- [Error case]`
-`- [Edge case]`
-
+- The default suite must remain green even when the showcase intentionally includes known application defects.
+- Represent a confirmed product defect with `test.fail(true, 'Known application defect: ...')` and the `@known-defect` tag.
+- The test must assert the desired product behavior, not the broken behavior.
+- Do not use `test.skip` for a known product defect. An unexpected pass must fail the run so the annotation is removed when the application is fixed.
+- Keep timeout-sensitive expected failures short and deterministic.
 Implementation rules:
 
 - Keep one test per user flow.
@@ -122,23 +98,27 @@ pnpm run admin-user-tests
 
 ## Verification Rule (Required)
 
-After any code or doc changes, run:
-
-- `pnpm run typecheck`
-- `pnpm run lint`
-- `pnpm run format:check`
-
-If a change only touches markdown or config, you may skip `pnpm run test:setup` and UI tests.
+- TypeScript/test code: run `pnpm run typecheck`, `pnpm run lint`, `pnpm run format:check`, and the smallest affected Playwright test.
+- Playwright config/auth changes: also run `pnpm exec playwright test --list` and an affected project test.
+- Documentation-only changes: run Prettier against the changed documentation files; typecheck and UI tests are not required.
+- If a targeted test fails because of a test implementation defect, diagnose and make a bounded correction. Stop when the application contract is unclear or the failure is external to the requested scope.
 
 ## Key Patterns
 
 ### Storage State Setup
 
-Create auth state files in `.state/` before running UI tests:
+The admin and QA projects depend on the setup project, so normal project runs create role-specific state automatically. Run setup directly only when refreshing or debugging state:
 
 ```
 pnpm run test:setup
 ```
+
+### Multi-Role Showcase
+
+- `setup` authenticates one admin and one QA account and writes separate ignored state files.
+- `chromium` uses admin state; `qa chromium` uses QA state.
+- Shared states are appropriate here because the showcase does not mutate shared account data.
+- A production suite that mutates server-side state should provision a unique account and storage state per parallel worker.
 
 ### Locator Placement
 
@@ -155,16 +135,6 @@ QA_PASSWORD="Demo#123"
 ADMIN_USER=admin.user
 ADMIN_PASSWORD="Admin#123"
 ```
-
-## AI System Map (Pillars)
-
-- Project brain: `AGENTS.md` (this file).
-- Agents runtime config: `.codex/agents/*.toml`.
-- Commands/skills/workflow references: `.agents/commands/`, `.agents/skills/`, `.agents/workflows/`.
-- Skills: `.agents/skills/*/SKILL.md`.
-- Commands: `.agents/commands/*.md`.
-- Hooks and capability config: `.codex/hooks.json` and `.codex/config.toml`.
-- IDE-local MCP (optional): `.vscode/mcp.json`.
 
 ## Commands
 
