@@ -1,24 +1,26 @@
 import { expect } from '@playwright/test';
 import { ADMIN_USER, QA_USER } from '@ui/test-data/ui-credentials.ts';
+import { ADMIN_STORAGE_STATE_PATH } from '@utils/constants.ts';
 import { test } from '@utils/ui-fixtures';
 
 test.describe('login', () => {
+  // Authentication tests must not inherit a project-level user session.
   test.use({
-    storageState: { cookies: [], origins: [] }, // run login.spec.ts with a clean storage state
+    storageState: { cookies: [], origins: [] },
   });
 
   test('verify admin can log in with valid credentials and reach the authenticated area', { tag: ['@smoke'] }, async ({ loginPage }) => {
     await loginPage.navigateTo();
     await loginPage.loginWithCredentials(ADMIN_USER);
-    expect(await loginPage.getCurrentUrl(), 'Page URL should match /').toMatch(/\/$/);
-    expect(await loginPage.isLoggedIn(), 'Authenticated header controls should be visible after admin login').toBe(true);
+    await expect(loginPage.page, 'admin should reach the home route').toHaveURL(/\/$/);
+    await expect(loginPage.logoutButton, 'authenticated header controls should be visible after admin login').toBeVisible();
   });
 
   test('verify qa user can log in with valid credentials and reach the authenticated area', { tag: ['@regression'] }, async ({ loginPage }) => {
     await loginPage.navigateTo();
     await loginPage.loginWithCredentials(QA_USER);
-    expect(await loginPage.getCurrentUrl(), 'Page URL should match /').toMatch(/\/$/);
-    expect(await loginPage.isLoggedIn(), 'Authenticated header controls should be visible after QA login').toBe(true);
+    await expect(loginPage.page, 'QA user should reach the home route').toHaveURL(/\/$/);
+    await expect(loginPage.logoutButton, 'authenticated header controls should be visible after QA login').toBeVisible();
   });
 
   test('verify login fails when password is incorrect for a valid username.', { tag: ['@smoke'] }, async ({ loginPage }) => {
@@ -26,15 +28,15 @@ test.describe('login', () => {
 
     await loginPage.navigateTo();
     await loginPage.login(ADMIN_USER.username, invalidPassword);
-    expect(await loginPage.getCurrentUrl(), 'Page URL should match /auth/login').toMatch(/\/auth\/login$/);
-    expect(await loginPage.isInvalidCredentialsMessageVisible(), 'Invalid credentials message should appear').toBe(true);
+    await expect(loginPage.page, 'invalid credentials should keep the user on the login route').toHaveURL(/\/auth\/login$/);
+    await expect(loginPage.invalidCredentialsMessage, 'invalid credentials message should appear').toBeVisible();
   });
 
   test('verify validation prevents login with missing credentials.', { tag: ['@regression'] }, async ({ loginPage }) => {
     await loginPage.navigateTo();
     await loginPage.submitLogin();
-    expect(await loginPage.getCurrentUrl(), 'Page URL should match /auth/login').toMatch(/\/auth\/login$/);
-    expect(await loginPage.isUsernameInputFocused(), 'Username input should be focused').toBe(true);
+    await expect(loginPage.page, 'native validation should keep the user on the login route').toHaveURL(/\/auth\/login$/);
+    await expect(loginPage.usernameInput, 'username input should be focused').toBeFocused();
     expect(await loginPage.isUsernameValueMissing(), 'Username required field should display browser-native validation state').toBe(true);
   });
 
@@ -43,16 +45,19 @@ test.describe('login', () => {
     const passwordWithSpaces = `  ${ADMIN_USER.password}  `;
     await loginPage.navigateTo();
     await loginPage.login(usernameWithSpaces, passwordWithSpaces);
-    expect(await loginPage.getCurrentUrl(), 'Page URL should match /auth/login').toMatch(/\/auth\/login$/);
-    expect(await loginPage.isInvalidCredentialsMessageVisible(), 'Invalid credentials message should appear').toBe(true);
+    await expect(loginPage.page, 'credentials with surrounding spaces should stay on the login route').toHaveURL(/\/auth\/login$/);
+    await expect(loginPage.invalidCredentialsMessage, 'invalid credentials message should appear').toBeVisible();
   });
 
   test.describe('authenticated session behavior', () => {
+    // Override the clean state above to prove role-specific state reuse and redirect behavior.
+    test.use({ storageState: ADMIN_STORAGE_STATE_PATH });
+
     test('verify authenticated users are redirected away from the login page', { tag: ['@regression'] }, async ({ loginPage }) => {
       await loginPage.navigateToRoute();
       await loginPage.waitForPostLogin();
-      expect(await loginPage.getCurrentUrl(), 'Authenticated users should be redirected to the home route').toMatch(/\/$/);
-      expect(await loginPage.isLoggedIn(), 'Authenticated header controls should remain visible after redirect').toBe(true);
+      await expect(loginPage.page, 'authenticated users should be redirected to the home route').toHaveURL(/\/$/);
+      await expect(loginPage.logoutButton, 'authenticated header controls should remain visible after redirect').toBeVisible();
     });
   });
 });

@@ -1,9 +1,8 @@
 import { step } from '@config/steps-configuration';
-import type { Locator, Page, TestInfo } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 import { expect } from '@playwright/test';
 import { BasePage } from '@ui/page-objects/globals/base-page';
 import type { UICredentials } from '@ui/test-data/ui-credentials.ts';
-import { createStorageStateFileIfNotExist } from '@utils/utility-functions';
 
 /**
  * Login Page Object
@@ -11,24 +10,24 @@ import { createStorageStateFileIfNotExist } from '@utils/utility-functions';
  */
 export default class LoginPage extends BasePage {
   private readonly loginForm: Locator;
-  private readonly username: Locator;
-  private readonly password: Locator;
+  readonly usernameInput: Locator;
+  readonly logoutButton: Locator;
+  readonly invalidCredentialsMessage: Locator;
+  private readonly passwordInput: Locator;
   private readonly rememberMe: Locator;
   private readonly loginBtn: Locator;
   private readonly loginHeading: Locator;
-  private readonly logoutBtn: Locator;
   private readonly sideMenu: Locator;
-  private readonly invalidCredentialsMessage: Locator;
 
-  constructor(page: Page, testInfo: TestInfo) {
-    super(page, testInfo);
+  constructor(page: Page) {
+    super(page);
     this.loginForm = page.getByTestId('form-login');
-    this.username = page.getByLabel(/username/i);
-    this.password = page.getByLabel(/password/i);
+    this.usernameInput = page.getByLabel(/username/i);
+    this.passwordInput = page.getByLabel(/password/i);
     this.rememberMe = page.getByLabel(/remember me/i);
     this.loginBtn = page.getByRole('button', { name: /login/i });
     this.loginHeading = page.getByRole('heading', { level: 1, name: /welcome back/i });
-    this.logoutBtn = page.getByTestId('button-logout-header');
+    this.logoutButton = page.getByTestId('button-logout-header');
     this.sideMenu = page.getByTestId('menu-side-container');
     this.invalidCredentialsMessage = page.getByText('Invalid credentials');
   }
@@ -39,7 +38,7 @@ export default class LoginPage extends BasePage {
   @step('navigate to login page')
   async navigateTo(): Promise<void> {
     await super.navigateTo('auth/login');
-    await this.username.waitFor({ state: 'visible' });
+    await this.usernameInput.waitFor({ state: 'visible' });
   }
 
   /**
@@ -58,8 +57,8 @@ export default class LoginPage extends BasePage {
   async toBeLoaded(): Promise<void> {
     await expect(this.loginHeading, 'Login page heading should be visible').toBeVisible();
     await expect(this.loginForm, 'Login form should be visible').toBeVisible();
-    await expect(this.username, 'Username input should be visible').toBeVisible();
-    await expect(this.password, 'Password input should be visible').toBeVisible();
+    await expect(this.usernameInput, 'Username input should be visible').toBeVisible();
+    await expect(this.passwordInput, 'Password input should be visible').toBeVisible();
     await expect(this.loginBtn, 'Login button should be visible').toBeVisible();
   }
 
@@ -70,11 +69,11 @@ export default class LoginPage extends BasePage {
    */
   @step('login with provided credentials')
   async login(username: string, password: string): Promise<void> {
-    await this.username.fill(username);
-    await this.password.fill(password);
+    await this.usernameInput.fill(username);
+    await this.passwordInput.fill(password);
     await this.rememberMe.check();
     await this.loginBtn.waitFor({ state: 'visible' });
-    await this.helpers.clickOnLocator(this.loginBtn);
+    await this.loginBtn.click();
   }
 
   /**
@@ -92,29 +91,10 @@ export default class LoginPage extends BasePage {
    */
   @step('logout from the application')
   async logout(): Promise<void> {
-    await this.logoutBtn.waitFor({ state: 'visible' });
-    await this.helpers.clickOnLocator(this.logoutBtn);
+    await this.logoutButton.waitFor({ state: 'visible' });
+    await this.logoutButton.click();
     await this.page.waitForLoadState('load');
     await this.toBeLoaded();
-  }
-
-  /**
-   * Check if user is logged in
-   * @returns True if logoutBtn is visible
-   */
-  @step('check if user is logged in')
-  async isLoggedIn(): Promise<boolean> {
-    return await this.logoutBtn.isVisible().catch(() => false);
-  }
-
-  /**
-   * Save current storage state to file
-   * @param targetPath - Path to save storage state
-   */
-  @step('save storage state')
-  async saveStorageState(targetPath: string): Promise<void> {
-    await createStorageStateFileIfNotExist(targetPath);
-    await this.page.context().storageState({ path: targetPath });
   }
 
   /**
@@ -122,7 +102,7 @@ export default class LoginPage extends BasePage {
    */
   @step('wait for post-login actions')
   async waitForPostLogin(): Promise<void> {
-    await this.logoutBtn.waitFor({ state: 'visible' });
+    await this.logoutButton.waitFor({ state: 'visible' });
     await this.sideMenu.waitFor({ state: 'visible' });
   }
 
@@ -132,23 +112,7 @@ export default class LoginPage extends BasePage {
   @step('submit login form')
   async submitLogin(): Promise<void> {
     await this.loginBtn.waitFor({ state: 'visible' });
-    await this.helpers.clickOnLocator(this.loginBtn);
-  }
-
-  /**
-   * Check if invalid credentials message is visible.
-   */
-  @step('check invalid credentials visibility')
-  async isInvalidCredentialsMessageVisible(): Promise<boolean> {
-    return await this.invalidCredentialsMessage.isVisible();
-  }
-
-  /**
-   * Check if username input is focused after failed form submission.
-   */
-  @step('check username input focus')
-  async isUsernameInputFocused(): Promise<boolean> {
-    return await this.username.evaluate((element) => element === document.activeElement);
+    await this.loginBtn.click();
   }
 
   /**
@@ -156,7 +120,7 @@ export default class LoginPage extends BasePage {
    */
   @step('check username required-field validation')
   async isUsernameValueMissing(): Promise<boolean> {
-    return await this.username.evaluate((element) => {
+    return await this.usernameInput.evaluate((element) => {
       if (!(element instanceof HTMLInputElement)) {
         return false;
       }

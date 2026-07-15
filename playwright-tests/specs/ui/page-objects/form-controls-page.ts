@@ -1,13 +1,18 @@
 import { step } from '@config/steps-configuration';
-import type { Locator, Page, TestInfo } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 import { expect } from '@playwright/test';
 import { BasePage } from '@ui/page-objects/globals/base-page';
 import type { EmployeeFormData, FormControlsRoute, ReviewFormData } from '@utils/types.ts';
 
 export default class FormControlsPage extends BasePage {
+  readonly employeeRows: Locator;
   private readonly mainContent: Locator;
   private readonly pageTitle: Locator;
+  private readonly reviewForm: Locator;
   private readonly resultPanelContent: Locator;
+  private readonly movieTitleValidationMessage: Locator;
+  private readonly directorNameValidationMessage: Locator;
+  private readonly reviewTextValidationMessage: Locator;
   private readonly movieTitleInput: Locator;
   private readonly emailInput: Locator;
   private readonly reviewTextInput: Locator;
@@ -20,7 +25,6 @@ export default class FormControlsPage extends BasePage {
   private readonly professionalPlanRadio: Locator;
   private readonly enterprisePlanRadio: Locator;
   private readonly tableSearchInput: Locator;
-  private readonly employeeRows: Locator;
   private readonly nextPageButton: Locator;
   private readonly paginationSection: Locator;
   private readonly addEmployeeButton: Locator;
@@ -48,11 +52,15 @@ export default class FormControlsPage extends BasePage {
   private readonly enableDisableButton: Locator;
   private readonly addCustomFieldButton: Locator;
 
-  constructor(page: Page, testInfo: TestInfo) {
-    super(page, testInfo);
+  constructor(page: Page) {
+    super(page);
     this.mainContent = page.getByRole('main');
     this.pageTitle = this.mainContent.getByRole('heading', { level: 1 });
+    this.reviewForm = page.getByTestId('form-text-box');
     this.resultPanelContent = page.getByTestId('result-panel-content');
+    this.movieTitleValidationMessage = this.reviewForm.getByTestId('error-full-name');
+    this.directorNameValidationMessage = this.reviewForm.getByTestId('error-email');
+    this.reviewTextValidationMessage = this.reviewForm.getByText(/review must be at least 20 characters/i);
     this.movieTitleInput = page.getByTestId('input-full-name');
     this.emailInput = page.getByTestId('input-email');
     this.reviewTextInput = page.getByTestId('input-current-address');
@@ -85,7 +93,7 @@ export default class FormControlsPage extends BasePage {
     this.completeTaskButton = page.getByTestId('button-complete');
     this.brokenLink = page.getByTestId('link-not-found');
     this.externalDocsLink = page.getByTestId('link-external-docs');
-    this.homeLink = page.getByRole('link', { name: /^home$/i });
+    this.homeLink = page.getByTestId('link-home-page');
     this.mediaUploadInput = page.getByLabel(/upload.*media|media.*upload|media file/i);
     this.documentUploadInput = page.getByTestId('input-file-upload');
     this.downloadSampleButton = page.getByTestId('button-download-sample');
@@ -145,6 +153,20 @@ export default class FormControlsPage extends BasePage {
   }
 
   /**
+   * Submit an empty review form and return the visible validation messages.
+   */
+  @step('submit empty review form')
+  async submitEmptyReview(): Promise<string[]> {
+    await this.submitFormButton.click();
+    await Promise.all([
+      expect(this.movieTitleValidationMessage, 'movie title validation message should be visible').toBeVisible(),
+      expect(this.directorNameValidationMessage, 'director name validation message should be visible').toBeVisible(),
+      expect(this.reviewTextValidationMessage, 'review text validation message should be visible').toBeVisible(),
+    ]);
+    return this.getReviewValidationMessages();
+  }
+
+  /**
    * Select representative nested skills and return summary text.
    */
   @step('select nested skill tags')
@@ -193,9 +215,8 @@ export default class FormControlsPage extends BasePage {
    * Search employee table and return visible row count.
    */
   @step('search employee table')
-  async searchEmployeeTable(term: string): Promise<number> {
+  async searchEmployeeTable(term: string): Promise<void> {
     await this.tableSearchInput.fill(term);
-    return this.employeeRows.count();
   }
 
   /**
@@ -398,7 +419,7 @@ export default class FormControlsPage extends BasePage {
    */
   @step('download sample pdf template')
   async downloadSampleTemplate(): Promise<string> {
-    const downloadPromise = this.page.waitForEvent('download');
+    const downloadPromise = this.page.waitForEvent('download', { timeout: 5_000 });
     await this.downloadSampleButton.click();
     const download = await downloadPromise;
     return download.suggestedFilename();
@@ -444,6 +465,16 @@ export default class FormControlsPage extends BasePage {
   @step('read result panel text')
   async getResultPanelText(): Promise<string> {
     return (await this.resultPanelContent.innerText()).trim();
+  }
+
+  /**
+   * Read visible validation messages from the review form.
+   */
+  @step('read review validation messages')
+  async getReviewValidationMessages(): Promise<string[]> {
+    return [await this.movieTitleValidationMessage.innerText(), await this.directorNameValidationMessage.innerText(), await this.reviewTextValidationMessage.innerText()]
+      .map((text) => text.trim())
+      .filter(Boolean);
   }
 
   private async fillReviewForm(reviewData: ReviewFormData): Promise<void> {

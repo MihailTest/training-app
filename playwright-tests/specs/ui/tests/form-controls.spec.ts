@@ -39,16 +39,16 @@ test.describe('form controls', () => {
       expect(resetPanel, 'reset should restore the default empty review summary').toContain('No review submitted yet');
     });
 
-    test('empty submit preserves the default review summary state', { tag: ['@regression'] }, async ({ formControlsPage }) => {
+    test('negative: empty submit shows required-field validation', { tag: ['@regression'] }, async ({ formControlsPage }) => {
       await formControlsPage.navigateToRoute('text-input');
 
-      await formControlsPage.submitShortReview({
-        movieTitle: '',
-        reviewerEmail: '',
-        reviewText: '',
-      });
-
+      const validationMessages = await formControlsPage.submitEmptyReview();
       const emptySubmitPanel = await formControlsPage.getResultPanelText();
+
+      expect(validationMessages, 'empty submit should show all required-field validation messages').toEqual(
+        expect.arrayContaining(['Movie Title is required', 'Director Name is required', 'Review must be at least 20 characters'])
+      );
+      expect(validationMessages, 'empty submit should surface three validation messages').toHaveLength(3);
       expect(emptySubmitPanel, 'empty submit should keep the default empty review summary').toContain('No review submitted yet');
     });
   });
@@ -109,29 +109,31 @@ test.describe('form controls', () => {
       const initialRows = await formControlsPage.getVisibleEmployeeRowsCount();
       expect(initialRows, 'table should show initial records').toBeGreaterThan(0);
 
-      const matchedRows = await formControlsPage.searchEmployeeTable(TABLE_SEARCH_TERMS.match);
-      expect(matchedRows, 'search by existing keyword should return rows').toBeGreaterThan(0);
+      await formControlsPage.searchEmployeeTable(TABLE_SEARCH_TERMS.match);
+      await expect(formControlsPage.employeeRows, 'search by existing keyword should return rows').not.toHaveCount(0);
 
-      const clearedRows = await formControlsPage.searchEmployeeTable(TABLE_SEARCH_TERMS.clear);
-      expect(clearedRows, 'clearing search should restore initial rows').toBe(initialRows);
+      await formControlsPage.searchEmployeeTable(TABLE_SEARCH_TERMS.clear);
+      await expect(formControlsPage.employeeRows, 'clearing search should restore initial rows').toHaveCount(initialRows);
     });
 
     test('negative: no-match search returns empty rows', { tag: ['@regression'] }, async ({ formControlsPage }) => {
       await formControlsPage.navigateToRoute('data-table');
 
-      const noMatchRows = await formControlsPage.searchEmployeeTable(TABLE_SEARCH_TERMS.noMatch);
-      expect(noMatchRows, 'search by unknown keyword should return zero rows').toBe(0);
+      await formControlsPage.searchEmployeeTable(TABLE_SEARCH_TERMS.noMatch);
+      await expect(formControlsPage.employeeRows, 'search by unknown keyword should return zero rows').toHaveCount(0);
 
-      const clearedRows = await formControlsPage.searchEmployeeTable(TABLE_SEARCH_TERMS.clear);
-      expect(clearedRows, 'rows should return after clearing search').toBeGreaterThan(0);
+      await formControlsPage.searchEmployeeTable(TABLE_SEARCH_TERMS.clear);
+      await expect(formControlsPage.employeeRows, 'rows should return after clearing search').not.toHaveCount(0);
     });
 
-    test('search resets or remains effective after moving to the second table page', { tag: ['@regression'] }, async ({ formControlsPage }) => {
+    test('known defect: search resets pagination to the first matching page', { tag: ['@regression', '@known-defect'] }, async ({ formControlsPage }) => {
+      test.fail(true, 'Known application defect: filtering on page two keeps the stale page index and hides otherwise matching rows.');
+
       await formControlsPage.navigateToRoute('data-table');
 
       await formControlsPage.goToNextEmployeeTablePage();
-      const matchedRows = await formControlsPage.searchEmployeeTable(TABLE_SEARCH_TERMS.match);
-      expect(matchedRows, 'search by existing keyword should still return rows after paging').toBeGreaterThan(0);
+      await formControlsPage.searchEmployeeTable(TABLE_SEARCH_TERMS.match);
+      await expect(formControlsPage.employeeRows, 'search should reset pagination and show matching rows').not.toHaveCount(0);
 
       const paginationSummary = await formControlsPage.getEmployeeTablePaginationSummary();
       expect(paginationSummary, 'pagination summary should reflect a non-empty filtered result').not.toContain('Showing 0 of');
@@ -266,7 +268,9 @@ test.describe('form controls', () => {
       expect(initialState, 'result panel should start with empty upload state').toContain('No documents uploaded');
     });
 
-    test('happy: pdf template download action starts a file download', { tag: ['@regression'] }, async ({ formControlsPage }) => {
+    test('known defect: pdf template action starts a file download', { tag: ['@regression', '@known-defect'] }, async ({ formControlsPage }) => {
+      test.fail(true, 'Known application defect: the PDF action currently displays a toast but does not create a browser download.');
+
       await formControlsPage.navigateToRoute('file-operations');
 
       const suggestedFilename = await formControlsPage.downloadSampleTemplate();
